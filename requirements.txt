@@ -1,0 +1,14 @@
+langchain
+python-dotenv
+google.generativeai
+langchain-google-genai
+langchain-elasticsearch
+langchain-openai
+numexpr
+wikipedia
+langchain_community
+langchain_core
+rapidocr_onnxruntime
+arxiv
+pypdf
+django == 5.1.1
