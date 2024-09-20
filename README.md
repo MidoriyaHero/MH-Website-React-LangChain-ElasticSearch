@@ -1,4 +1,4 @@
-# Langchain-Crash-Course 
+# RAG  
 
 ## Step 1:
 Create a new environment, then activate and install required libraries

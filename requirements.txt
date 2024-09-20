@@ -12,3 +12,4 @@ rapidocr_onnxruntime
 arxiv
 pypdf
 django == 5.1.1
+django-elasticsearch-dsl
