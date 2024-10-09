@@ -1,4 +1,5 @@
-# Set up 
+# Set up
+=======
 Create a new environment, then activate and install required libraries
 ```
 conda create -n chatbotRAG
