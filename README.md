@@ -1,11 +1,9 @@
-# Langchain-Crash-Course 
-
-## Step 1:
+# Set up 
 Create a new environment, then activate and install required libraries
 ```
-conda create -n langchain
+conda create -n chatbotRAG
 
-conda activate langchain
+conda activate chatbotRAG
 
 pip install -r requirements.txt
 ```
