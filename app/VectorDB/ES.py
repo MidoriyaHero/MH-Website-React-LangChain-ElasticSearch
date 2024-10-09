@@ -4,6 +4,8 @@ from langchain_openai import OpenAIEmbeddings
 import getpass
 from langchain_elasticsearch import ElasticsearchStore
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_core.documents import Document
+from langchain_community.document_loaders import PyPDFLoader
 
 load_dotenv()
 os.environ["GOOGLE_API_KEY"] = os.getenv('GG_API_KEY')
@@ -14,6 +16,7 @@ MODEL_NAME = os.getenv('MODEL_NAME')
 
 
 class Vectordb():
+
     if EMBEDING_MODEL == 'models/embedding-001':
     #set up for using gg embeding model
         def _init():
@@ -24,3 +27,11 @@ class Vectordb():
                 es_url=ES_URL,
             )
             return vector_store
+        
+    def load_doc(self, document)-> Document:
+        self.loader = PyPDFLoader(file_path = document, extract_images = True,) #document can be path or file in DB
+        self.document = self.loader.load_and_split()
+        return self.document
+    
+    def add_doc(self, vector_store):
+        vector_store.add_documents(documents=self.document)
