@@ -3,11 +3,11 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
 from langchain.prompts import ChatPromptTemplate
-from prompt_template import TEMPLATE
+from prompt_template.template import TEMPLATE
 from VectorDB.ES import Vectordb
 
 vector_store = Vectordb()
-def main(query):
+def response(query):
     llm = ChatGoogleGenerativeAI(model="gemini-pro")
     #prompt = hub.pull("rlm/rag-prompt")
     prompt=ChatPromptTemplate.from_template(TEMPLATE)

@@ -1,5 +1,9 @@
 from fastapi import FastAPI
-from utils import *
+from app.router import response
 
-app = FastAPI()
 
+app = FastAPI(
+    title= "RAG Chatbot API",
+    version = "0.0.1",
+)
+app.include_router(response.router)
