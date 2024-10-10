@@ -20,6 +20,7 @@ async def query(items: str):
 async def query(items: str):
     try:
         #query = items.query
-        return response(items)
+        return {'query': items, 
+                'response':response(items)}
     except Exception as e:
         raise HTTPException(status_code = 500, detail = "Internal server error")
