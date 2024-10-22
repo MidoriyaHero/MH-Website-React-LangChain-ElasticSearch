@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-import app.VectorDB.ES as vector
+import app.config.ES as vector
 
 test_connection = APIRouter()
 

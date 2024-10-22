@@ -10,7 +10,7 @@ uri = f"mongodb+srv://thesis:{password}@cluster0.dsd5v.mongodb.net/?retryWrites=
 # Create a new client and connect to the server
 client = MongoClient(uri, server_api=ServerApi('1'))
 db = client.BlogClient
-blogs_collection = db['blogs']
+blogs_collection = db['test']
 
 # Send a ping to confirm a successful connection
 try:

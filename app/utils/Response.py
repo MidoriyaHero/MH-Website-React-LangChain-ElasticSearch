@@ -4,7 +4,7 @@ from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
 from langchain.prompts import ChatPromptTemplate
 from app.prompt_template.template import TEMPLATE
-import app.VectorDB.ES as vector
+import app.config.ES as vector
 
 
 def response(query):

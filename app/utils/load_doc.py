@@ -1,4 +1,4 @@
-import app.VectorDB.ES as vector
+import app.config.ES as vector
 
 vector_store = vector.Vectordb()
 def load(file):
