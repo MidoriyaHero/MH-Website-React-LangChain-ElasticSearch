@@ -12,3 +12,4 @@ rapidocr_onnxruntime
 arxiv
 pypdf
 fastapi
+pymongo[srv]

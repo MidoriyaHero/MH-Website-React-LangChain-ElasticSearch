@@ -29,15 +29,18 @@ class Vectordb:
         
     def as_retriever(self):
         return self.vector_store.as_retriever(search_type="similarity_score_threshold", search_kwargs={"score_threshold": 0.9})
+    
     def search(self, query: str) -> List:
         retriever = self.vector_store.as_retriever(
         search_type="similarity_score_threshold", search_kwargs={"score_threshold": 0.9}
         )
         self.context = retriever.invoke(query)
         return self.context
+    
     def load_doc(self, document: str)-> Document:
         self.loader = PyPDFLoader(file_path = document, extract_images = True,) #document can be path or file in DB
         self.document = self.loader.load_and_split()
         return self.document
-    def add_doc(self):
-        self.vector_store.add_documents(documents=self.document)
+    
+    def add_doc(self, document):
+        self.vector_store.add_documents(documents=document)
