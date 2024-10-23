@@ -13,3 +13,4 @@ arxiv
 pypdf
 fastapi
 pymongo[srv]
+python-multipart

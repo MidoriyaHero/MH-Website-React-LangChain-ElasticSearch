@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.router import response
+from app.router import response, load_doc
 from app.test import test_connection
 
 app = FastAPI(
@@ -7,4 +7,5 @@ app = FastAPI(
     version = "0.0.1",
 )
 app.include_router(response.response_router)
+app.include_router(load_doc.router_add_doc)
 app.include_router(test_connection.test_connection)

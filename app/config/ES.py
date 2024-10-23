@@ -42,5 +42,5 @@ class Vectordb:
         self.document = self.loader.load_and_split()
         return self.document
     
-    def add_doc(self, document):
-        self.vector_store.add_documents(documents=document)
+    def add_doc(self):
+        self.vector_store.add_documents(documents=self.document)
