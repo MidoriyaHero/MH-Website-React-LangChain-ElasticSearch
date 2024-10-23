@@ -35,8 +35,8 @@ class Vectordb:
         retriever = self.vector_store.as_retriever(
         search_type="similarity_score_threshold", search_kwargs={"score_threshold": 0.9}
         )
-        self.context = retriever.invoke(query)
-        return self.context
+        context = retriever.invoke(query)
+        return context
     #Old versions for testing
     def load_doc(self, document: str)-> Document:
         self.loader = PyPDFLoader(file_path = document, extract_images = True,) #document can be path or file in DB

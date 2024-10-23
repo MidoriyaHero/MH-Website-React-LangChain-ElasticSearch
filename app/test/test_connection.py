@@ -5,13 +5,11 @@ import app.config.ES as vector
 test_connection = APIRouter()
 
 
-class Query(BaseModel):
-    query: str
-@test_connection.post("/testVectorDB")
-async def query(items: Query):
+@test_connection.get("/testVectorDB/{items}")
+async def query(items: str):
     try:
         vector_store = vector.Vectordb()
-        query = items.query
+        query = items
         context = vector_store.search(query)
         return context
     except Exception as e:
