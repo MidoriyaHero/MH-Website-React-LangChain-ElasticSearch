@@ -11,5 +11,6 @@ async def add_document(files: List[UploadFile] = File(...)):
             #to do: thêm phần time adding file trong mongodb
             load(file)
             return {"message": 'File added!', "filename": file.filename}
-        except Exception:
-            raise HTTPException(status_code = 400, detail = "Invalid Documents")
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=f"Error processing {file.filename}, {str(e)}")
+        

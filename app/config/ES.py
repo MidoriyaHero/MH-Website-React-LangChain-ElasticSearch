@@ -6,6 +6,7 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_core.documents import Document
 from langchain_community.document_loaders import PyPDFLoader
 from typing import List
+
 load_dotenv()
 os.environ["GOOGLE_API_KEY"] = os.getenv('GG_API_KEY')
 EMBEDING_MODEL = os.getenv('EMBEDDING_MODEL_NAME')
@@ -36,11 +37,12 @@ class Vectordb:
         )
         self.context = retriever.invoke(query)
         return self.context
-    
+    #Old versions for testing
     def load_doc(self, document: str)-> Document:
         self.loader = PyPDFLoader(file_path = document, extract_images = True,) #document can be path or file in DB
         self.document = self.loader.load_and_split()
         return self.document
     
-    def add_doc(self):
-        self.vector_store.add_documents(documents=self.document)
+    def add_doc(self, documents: List[Document]):
+        # Add documents directly to Elasticsearch
+        self.vector_store.add_documents(documents=documents)

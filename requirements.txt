@@ -14,3 +14,4 @@ pypdf
 fastapi
 pymongo[srv]
 python-multipart
+PyPDF2
