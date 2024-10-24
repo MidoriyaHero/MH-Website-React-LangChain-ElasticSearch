@@ -5,6 +5,7 @@ conda create -n chatbotRAG
 conda activate chatbotRAG
 pip install -r requirements.txt
 ```
+
 Then run these commands:
 ```
 cd app
