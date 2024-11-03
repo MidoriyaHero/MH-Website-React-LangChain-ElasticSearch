@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.router import response, load_doc
+from app.api.services import response, load_doc
 from app.test import test_connection
 
 app = FastAPI(
