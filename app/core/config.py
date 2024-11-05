@@ -11,5 +11,6 @@ class Settings(BaseSettings):
     ES_URL: str = os.getenv('ES_URL')
     MODEL_NAME: str = os.getenv('MODEL_NAME')
     MONGO_CONNECTION: str = os.getenv('MONGO_CONNECTION')
-
+    PROJECT_NAME: str = 'Mental RAG System'
+    API_STR: str = 'api'
 settings = Settings()

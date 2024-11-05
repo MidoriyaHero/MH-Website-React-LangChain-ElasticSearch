@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, File,UploadFile
-from app.utils.load_doc import load
+from app.services.load_doc import load
 from typing import List
 
 router_add_doc = APIRouter()

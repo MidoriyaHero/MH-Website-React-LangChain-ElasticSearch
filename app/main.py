@@ -1,11 +1,32 @@
 from fastapi import FastAPI
-from app.api.services import response, load_doc
-from app.test import test_connection
+from app.api import router
+from app.core.config import settings
+from beanie import init_beanie
+from contextlib import asynccontextmanager
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
+from app.models.user_model import User
+from app.models.journal_model import DailyJournal
+from motor.motor_asyncio import AsyncIOMotorClient
+from app.api.router import router
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # startup code goes here:
+    client: AsyncIOMotorClient = AsyncIOMotorClient(
+        settings.MONGO_DB,
+    )
+    await init_beanie(client.BlogClient, 
+                      document_models=[User, DailyJournal])
+    yield
+    # shutdown code goes here:
+    client.close()
 
 app = FastAPI(
-    title= "RAG Chatbot API",
-    version = "0.0.1",
+    title = settings.PROJECT_NAME,
+    openapi_url= f'/{settings.API_STR}/openapi.json',
+    lifespan=lifespan
 )
-app.include_router(response.response_router)
-app.include_router(load_doc.router_add_doc)
-app.include_router(test_connection.test_connection)
+
+app.include_router(router, prefix= f'/{settings.API_STR}')
