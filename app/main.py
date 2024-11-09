@@ -3,8 +3,6 @@ from app.api import router
 from app.core.config import settings
 from beanie import init_beanie
 from contextlib import asynccontextmanager
-from pymongo.mongo_client import MongoClient
-from pymongo.server_api import ServerApi
 from app.models.user_model import User
 from app.models.journal_model import DailyJournal
 from motor.motor_asyncio import AsyncIOMotorClient

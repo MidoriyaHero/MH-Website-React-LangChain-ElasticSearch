@@ -1,5 +1,5 @@
 from fastapi import UploadFile
-import app.config.ES as vector
+import app.core.ES as vector
 from PyPDF2 import PdfReader
 from langchain_core.documents import Document
 from typing import List

@@ -1,35 +1,39 @@
-from app.schemas.user_schema import UserAuth
+from fastapi.security import OAuth2PasswordBearer
+from app.core.config import settings
+from fastapi import Depends, HTTPException
 from app.models.user_model import User
-from app.core.security import get_password, verify_password
-from fastapi import HTTPException
+from jose import jwt
+from app.schemas.auth_schema import TokenPayLoad
+from datetime import datetime
+from pydantic import ValidationError
+from app.services.user_service import UserService
+from json import loads
 
-class UserService:
-    @staticmethod 
-    async def create_user(user: UserAuth):
-        user_in = User(
-            user_name = user.username,
-            email = user.email,
-            hash_password = get_password(user.password)
-        )
-        await user_in.save()
-        return user_in
+reusable_auth = OAuth2PasswordBearer(
+    tokenUrl= f"{settings.API_STR}/auth/login",
+    scheme_name= "JWT"
+)
+
+async def get_current_user(token: str = Depends(reusable_auth)) -> User:
+    try:
+       
+        payload = jwt.decode(token, settings.JWT_KEY, algorithms=settings.ALGORITHM)
+        token_data = TokenPayLoad(**payload)
+        
+        if datetime.fromisoformat(loads(token_data.expires)) < datetime.now():
+            raise HTTPException(
+                status_code=401, 
+                detail= "Token expired!!!",
+                headers={"WWW-Authenticate": "Bearer"})
     
-    @staticmethod
-    async def get_user_by_email(email: str):
-        user = await User.find_one(User.email == email)
-        return user
+    except(jwt.JWTError, ValidationError):
+        raise HTTPException(status_code=403,
+                            detail= "Could not validate credentials!!!",
+                            headers={"WWW-Authenticate": "Bearer"})
     
-    @staticmethod
-    async def get_user_by_id(UserId: str):
-        user = await User.find_one(User.user_id == UserId)
-        return user
-    
-    @staticmethod
-    async def authenticate(email: str, password: str):
-        user = await UserService.get_user_by_email(email)
-        if not user:
-            raise HTTPException(status_code= 400, detail= "Incorrect email address")
-        if not verify_password(password, user.hash_password):
-            raise HTTPException(status_code= 400, detail= "Incorrect password")
-        return user
-    
+    user = await UserService.get_user_by_id(UserId= token_data.subject)
+
+    if not user:
+        raise HTTPException(status_code=404, 
+                            detail= "Could not find user")
+    return user
