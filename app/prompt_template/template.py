@@ -1,9 +1,9 @@
 TEMPLATE="""
-Bạn là trợ lý cho các nhiệm vụ trả lời câu hỏi.
-Sử dụng các phần ngữ cảnh sau đây để trả lời câu hỏi.
-Nếu bạn không biết câu trả lời, chỉ cần nói rằng bạn không biết.
-Sử dụng tối thiểu năm câu và giữ cho câu trả lời ngắn gọn.
-Câu hỏi: {question}
-Bối cảnh: {context}
-Câu trả lời:
+You are an assistant for question answering tasks.
+Use the following context to answer the question.
+If you don't know the answer, just say you don't know.
+Use a minimum of five sentences and keep your answer short.
+Question: {question}
+Context: {context}
+Answer:
 """

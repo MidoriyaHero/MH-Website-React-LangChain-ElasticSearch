@@ -16,3 +16,7 @@ pymongo[srv]
 python-multipart
 PyPDF2
 beanie
+python-jose[cryptography]
+passlib
+pydantic[email]
+pydantic-settings

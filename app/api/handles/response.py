@@ -1,15 +1,14 @@
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
-from app.services.Response import response
+from app.schemas.response_schema import Response
+from app.services.Response_service import Response_service
 
 
 response_router = APIRouter()
 
 
-@response_router.get("/GetResponse/{items}")
+@response_router.get("/GetResponse/")
 async def query(items: str):
     try:
-        return {'query': items, 
-                'response':response(items)}
+        return Response_service.response(items)
     except Exception as e:
-        raise HTTPException(status_code = 500, detail = "Internal server error")
+        raise HTTPException(status_code = 500, detail = e)
