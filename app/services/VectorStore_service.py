@@ -38,14 +38,13 @@ class Vectordb_service:
             search_type="mmr", search_kwargs={'k': 6, 'lambda_mult': 0.25}
         )
         context = retriever.invoke(query)
-        print(context)
         return context
     #Old versions for testing
     def load_doc(self, document: str)-> Document:
         self.loader = PyPDFLoader(file_path = document, extract_images = True,) #document can be path or file in DB
         self.document = self.loader.load_and_split()
         return self.document
-    def load(self, file: UploadFile, chunk_size: int = 2000, overlap: int = 100):
+    def load(self, file: UploadFile, chunk_size: int = 5000, overlap: int = 100):
         documents = []
         if file.filename.endswith('.pdf'):
             try:

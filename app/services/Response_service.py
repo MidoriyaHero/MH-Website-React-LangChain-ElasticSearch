@@ -37,4 +37,5 @@ class Response_service:
 
 
         response=chain.invoke({"question": query})
+
         return response

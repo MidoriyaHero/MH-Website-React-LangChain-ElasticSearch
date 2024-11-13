@@ -1,9 +1,8 @@
 from pydantic import BaseModel
-from typing import Optional, List
-from langchain_core.documents import Document
+from typing import Optional, List, Any
 
 
 class Response(BaseModel):
     input: Optional[str]
-    context: List[Document]
+    context: List[Any]
     answer: Optional[str]
