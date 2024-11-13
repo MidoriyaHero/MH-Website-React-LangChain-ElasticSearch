@@ -30,11 +30,12 @@ class Vectordb_service:
             raise Exception('Invalid embedding model')
         
     def as_retriever(self):
-        return self.vector_store.as_retriever(search_type="similarity_score_threshold", search_kwargs={"score_threshold": 0.5, "k":5})
+        return self.vector_store.as_retriever(search_type="mmr", 
+                                              search_kwargs={'k': 6, 'lambda_mult': 0.25})
     
     def search(self, query: str) -> List:
         retriever = self.vector_store.as_retriever(
-            search_type="similarity_score_threshold", search_kwargs={"score_threshold": 0.5, "k":5}
+            search_type="mmr", search_kwargs={'k': 6, 'lambda_mult': 0.25}
         )
         context = retriever.invoke(query)
         print(context)
@@ -44,7 +45,7 @@ class Vectordb_service:
         self.loader = PyPDFLoader(file_path = document, extract_images = True,) #document can be path or file in DB
         self.document = self.loader.load_and_split()
         return self.document
-    def load(self, file: UploadFile, chunk_size: int = 1500, overlap: int = 200):
+    def load(self, file: UploadFile, chunk_size: int = 2000, overlap: int = 100):
         documents = []
         if file.filename.endswith('.pdf'):
             try:
