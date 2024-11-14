@@ -30,7 +30,7 @@ standalone_question_prompt = ChatPromptTemplate.from_messages(
         ("human", "{question}"),
     ]
 )
-os.environ["OPENAI_API_KEY"] = settings.OPENAI_API_KEY
+
 llm = ChatOpenAI(model="gpt-4o-mini-2024-07-18",temperature=0, openai_api_key=settings.OPENAI_API_KEY)
 question_chain = standalone_question_prompt | llm | parse_output
 retriever_chain = RunnablePassthrough.assign(context=question_chain | retriever | (lambda docs: "\n\n".join([d.page_content for d in docs])))
@@ -60,10 +60,9 @@ with_message_history = RunnableWithMessageHistory(
     history_messages_key="history",
 )
 
-def test_history(query):
-    dic = {
-        'input': query,
-        'answer': with_message_history.invoke({'question': query}, {'configurable': {'session_id': '1'}})
-
-    }
-    return ResponseHis(**dic)
+def test_history(query, session_id):
+    response = with_message_history.invoke(
+        {'question': query},
+        {'configurable': {'session_id': session_id}}
+    )
+    return ResponseHis(input=query, answer=response)  
