@@ -1,8 +1,9 @@
 from fastapi import APIRouter, HTTPException
 from app.schemas.response_schema import Response
-from app.services.Response_service import Response_service
+from app.services.chat_service import Response_service
 from typing import List
 from langchain_core.documents import Document
+from app.services.test import test_history
 
 response_router = APIRouter()
 
@@ -21,3 +22,8 @@ async def query(query: str):
         return Response(**dict_response)
     except Exception as e:
         raise HTTPException(status_code = 500, detail = e)
+    
+
+@response_router.get('/test')
+async def test(query: str):
+    return test_history(query)

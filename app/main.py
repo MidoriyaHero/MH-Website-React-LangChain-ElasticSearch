@@ -5,6 +5,7 @@ from beanie import init_beanie
 from contextlib import asynccontextmanager
 from app.models.user_model import User
 from app.models.journal_model import DailyJournal
+from app.models.history import history
 from motor.motor_asyncio import AsyncIOMotorClient
 from app.api.router import router
 
@@ -16,7 +17,7 @@ async def lifespan(app: FastAPI):
         settings.MONGO_DB,
     )
     await init_beanie(client.BlogClient, 
-                      document_models=[User, DailyJournal])
+                      document_models=[User, DailyJournal, history])
     yield
     # shutdown code goes here:
     client.close()

@@ -3,11 +3,13 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
 from langchain.prompts import ChatPromptTemplate
-from app.prompt_template.template import TEMPLATE
+from app.prompt_template.template import TEMPLATE, standalone_system_prompt
 from app.services.VectorStore_service import Vectordb_service
 from typing import List
 from langchain_core.documents import Document
-
+from app.models.user_model  import User
+from langchain_openai import ChatOpenAI
+from app.core.config import settings
 
 vectordb = Vectordb_service()
 class Response_service:
@@ -16,8 +18,8 @@ class Response_service:
         return "\n\n".join(doc.page_content for doc in docs)
     @staticmethod
     def response(query):
-        
-        llm = ChatGoogleGenerativeAI(model="gemini-pro")
+        llm = ChatOpenAI(model="gpt-4o-mini-2024-07-18",temperature=0, openai_api_key=settings.OPENAI_API_KEY)
+        #llm = ChatGoogleGenerativeAI(model="gemini-pro")
         #prompt = hub.pull("rlm/rag-prompt")
         prompt=ChatPromptTemplate.from_template(TEMPLATE)
         retriever = vectordb.as_retriever()
@@ -39,3 +41,6 @@ class Response_service:
         response=chain.invoke({"question": query})
 
         return response
+    
+
+

@@ -13,7 +13,7 @@ class JournalService:
     
     @staticmethod
     async def create( user: User, data: JournalCreate) -> DailyJournal:
-        journal = DailyJournal(**data.dict(), owner = user)
+        journal = DailyJournal(**data.model_dump(), owner = user)
         return await journal.insert()
     
     @staticmethod
@@ -24,7 +24,7 @@ class JournalService:
     @staticmethod
     async def update_journal( user: User, journal_id: UUID, data: JournalUpdate) -> DailyJournal:
         journal = await JournalService.retrieve(user, journal_id)
-        await journal.update({"$set": data.dict(exclude_unset = True)})
+        await journal.update({"$set": data.model_dump(exclude_unset = True)})
         await journal.save()
         return journal
     

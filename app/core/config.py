@@ -7,6 +7,7 @@ load_dotenv()
 
 class Settings(BaseSettings):
     GG_API: str = os.getenv('GG_API_KEY')
+    OPENAI_API_KEY: str = os.getenv('OPENAI_API_KEY')
     JWT_KEY: str = os.getenv('JWT_KEY')
     JWT_REFRESH_KEY: str = os.getenv('JWT_REFRESH_KEY')
 

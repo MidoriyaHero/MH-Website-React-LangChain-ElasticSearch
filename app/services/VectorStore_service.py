@@ -14,7 +14,6 @@ from typing import List
 
 os.environ["GOOGLE_API_KEY"] = settings.GG_API
 
-
 class Vectordb_service:
     #set up for using gg embeding model
     def __init__(self):
