@@ -1,12 +1,15 @@
 from beanie import Document, Link
-from typing import List
-from app.schemas.response_schema import ResponseHis
+from typing import Optional
+from pydantic import Field
+import datetime
 from app.models.user_model import User
 
 
 class history(Document):
     user: Link[User]  # Reference to User model
-    messages: List[ResponseHis] = []  # List of chat messages
-
+    input: Optional[str]
+    answer: Optional[str]
+    create_at: datetime = Field(default_factory = datetime.now)
+    
     class Settings:
         name = 'history'

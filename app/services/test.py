@@ -11,6 +11,7 @@ from app.services.VectorStore_service import Vectordb_service
 from typing import List
 from langchain_core.documents import Document
 from app.models.user_model  import User
+from app.schemas.response_schema import ResponseHis
 from app.core.config import settings
 from langchain_openai import ChatOpenAI
 import os
@@ -60,4 +61,9 @@ with_message_history = RunnableWithMessageHistory(
 )
 
 def test_history(query):
-    return with_message_history.invoke({'question': query}, {'configurable': {'session_id': '1'}})
+    dic = {
+        'input': query,
+        'answer': with_message_history.invoke({'question': query}, {'configurable': {'session_id': '1'}})
+
+    }
+    return ResponseHis(**dic)
