@@ -54,16 +54,59 @@ class Response_service:
             answer=rag_chain_from_docs
         )
 
-        response=chain.invoke({"question": query})
-
         return await chain.invoke({"question": query})
     
     def chat(query: str, user: User):
         #todo create chat session and store in database
         if user:
-            
-            pass
-    
+            parse_output = StrOutputParser()
+            vectordb = Vectordb_service()
+            retriever = vectordb.as_retriever()
+
+            standalone_question_prompt = ChatPromptTemplate.from_messages(
+                [
+                    ("system", standalone_system_prompt),
+                    MessagesPlaceholder(variable_name="history"),
+                    ("human", "{question}"),
+                ]
+            )
+
+            llm = ChatOpenAI(model="gpt-4o-mini-2024-07-18",temperature=0, openai_api_key=settings.OPENAI_API_KEY)
+            question_chain = standalone_question_prompt | llm | parse_output
+            retriever_chain = RunnablePassthrough.assign(context=question_chain | retriever | (lambda docs: "\n\n".join([d.page_content for d in docs])))
+            rag_system_prompt = """Answer the question based only on the following context: \
+            {context}
+            """
+            rag_prompt = ChatPromptTemplate.from_messages(
+                [
+                    ("system", rag_system_prompt),
+                    MessagesPlaceholder(variable_name="history"),
+                    ("human", "{question}"),
+                ]
+            )
+            # RAG chain
+            rag_chain = (
+                retriever_chain
+                | rag_prompt
+                | llm
+                | parse_output
+            )
+
+            # RAG chain with history
+            with_message_history = RunnableWithMessageHistory(
+                rag_chain,
+                Response_service.get_session_history,
+                input_messages_key="question",
+                history_messages_key="history",
+            )
+            response = with_message_history.invoke(
+                                                    {'question': query},
+                                                    {'configurable': {'session_id': str(user.user_id)}})
+            return response
+        
+        else:
+            raise Exception("User not found")
+        
     def history_chat(query: str, user: User):
         #todo retrieve chat session from database to show on UI
         pass

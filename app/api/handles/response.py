@@ -6,12 +6,12 @@ from app.models.user_model import User
 from app.api.dependency.user_dependency import get_current_user
 from langchain_core.documents import Document
 from app.services.test import test_history
-
+from app.services.chat_service import Response_service
 response_router = APIRouter()
 
 def format_docs(docs: List[Document]):
         return [doc.page_content for doc in docs]
-@response_router.get("/Single-query/", response_model= Response)
+@response_router.post("/Single-query/", response_model= Response)
 async def single_query(query: str):
     try:
         response = Response_service.response(query)
@@ -26,10 +26,10 @@ async def single_query(query: str):
         raise HTTPException(status_code = 500, detail = e)
     
 
-@response_router.get('/test_chat')
-async def test(query: str, current_user: User = Depends(get_current_user)):
-    return test_history(query, current_user)
+@response_router.post('/test_chat')
+async def test(query: str, session_id):
+    return test_history(query, session_id)
 
-@response_router.get('/chat/{user}')
+@response_router.post('/chat/{user}')
 async def chat(query: str, current_user: User = Depends(get_current_user)):
-     pass
+    return Response_service.chat(query, current_user)
