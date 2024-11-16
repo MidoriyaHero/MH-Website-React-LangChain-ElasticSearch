@@ -12,3 +12,7 @@ Given a chat history and a follow-up question, rephrase the follow-up question t
 Do NOT answer the question, just reformulate it if needed, otherwise return it as is. \
 Only return the final standalone question. \
 """
+
+#todo create prompt for chat history
+#todo create prompt for evaluate journal
+#todo create prompt for evaluate response

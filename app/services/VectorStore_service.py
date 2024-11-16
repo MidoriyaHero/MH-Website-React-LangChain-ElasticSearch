@@ -80,3 +80,10 @@ class Vectordb_service:
             pass
         else:
             print(f"Unsupported file format: {file.filename}")
+
+    def add_message():
+        #todo add message history to es
+        pass
+    def retrieve_messages(session_id):
+        #todo retrieve top k relevant messages from es to add to prompt
+        pass
