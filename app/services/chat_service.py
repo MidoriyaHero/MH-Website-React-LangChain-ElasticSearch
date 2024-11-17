@@ -129,3 +129,5 @@ class Response_service:
 
 # # Retrieve messages
 # messages = history.messages
+
+#The architechture should follow: https://community.aws/content/2j9daS4A39fteekgv9t1Hty11Qy/managing-chat-history-at-scale-in-generative-ai-chatbots?lang=en
