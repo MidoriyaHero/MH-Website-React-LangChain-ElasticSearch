@@ -30,7 +30,7 @@ class DailyJournal(Document):
         return False
     
     @before_event([Replace, Insert])
-    async def update(self):
+    async def update_time(self):
         self.update_at = datetime.now()
 
     class Settings:

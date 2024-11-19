@@ -15,9 +15,9 @@ class JournalUpdate(BaseModel):
 
 class JournalOut(BaseModel):
     journal_id: UUID
-    status: bool
-    title: str
-    description: str
-    create_at: datetime
-    update_at: datetime
+    status: Optional[bool] = False
+    title: Optional[str] = Field(..., title = "Title")
+    description: Optional[str]  = Field(..., title= "Description")
+    create_at: Optional[datetime]
+    update_at: Optional[datetime]
     

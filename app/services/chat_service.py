@@ -54,7 +54,7 @@ class Response_service:
             answer=rag_chain_from_docs
         )
 
-        return await chain.invoke({"question": query})
+        return chain.invoke({"question": query})
     
     def chat(query: str, user: User):
         #todo create chat session and store in database

@@ -3,6 +3,7 @@ from app.models.user_model  import User
 from app.models.journal_model import DailyJournal
 from app.schemas.journal_schema import JournalCreate, JournalUpdate
 from uuid import UUID
+import uuid
 
 
 class JournalService:
@@ -18,7 +19,8 @@ class JournalService:
     
     @staticmethod
     async def retrieve( user: User, journal_id: UUID):
-        journal = DailyJournal.find_one(DailyJournal.journal_id == journal_id, DailyJournal.owner.id == user.id)
+        journal = await DailyJournal.find_one(DailyJournal.journal_id == journal_id, DailyJournal.owner.id == user.id)
+        print(journal)
         return journal
     
     @staticmethod
