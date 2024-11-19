@@ -1,9 +1,9 @@
 from typing import List 
+from uuid import UUID
+
 from app.models.user_model  import User
 from app.models.journal_model import DailyJournal
 from app.schemas.journal_schema import JournalCreate, JournalUpdate
-from uuid import UUID
-import uuid
 
 
 class JournalService:

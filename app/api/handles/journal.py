@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Depends
+from uuid import UUID
+from typing import List
+
 from app.models.user_model import User
 from app.api.dependency.user_dependency import get_current_user
 from app.schemas.journal_schema import JournalOut, JournalCreate, JournalUpdate
 from app.services.journal_service import JournalService
 from app.models.journal_model import DailyJournal
-from uuid import UUID
-from typing import List
 
 journal_router = APIRouter()
 

@@ -13,12 +13,13 @@ Do NOT answer the question, just reformulate it if needed, otherwise return it a
 Only return the final standalone question. \
 """
 
-#todo create prompt for chat history
+#todo create prompt for chat history - this part need to sumarize more specific
 prompt_history = """
 Here is conservation 20 messages between AI and Human, your task is to summarize this conservation into paragraphs \
 with 250 words. 1 paragraph for  AI messages, 1 paragraph for Human messages.
 {messages_history}
 """
+
 #todo create prompt for evaluate journal
 journal_evaluate_prompt = """
 Base on the checklist {checklist}, your task is to evaluate these daily journals of patient. Focus on:\

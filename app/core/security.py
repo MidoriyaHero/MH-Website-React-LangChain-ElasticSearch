@@ -1,9 +1,10 @@
 from passlib.context import CryptContext
 from typing import Union, Any
 from datetime import datetime,timedelta, date
-from app.core.config import settings
 from jose import jwt 
 from json import dumps
+
+from app.core.config import settings
 
 def json_serial(obj):
     """JSON serializer for objects not serializable by default json code"""

@@ -1,16 +1,16 @@
 import os
+from typing import List
+from fastapi import UploadFile
+from PyPDF2 import PdfReader
+
+from langchain_core.documents import Document
 from langchain_openai import OpenAIEmbeddings
 from langchain_elasticsearch import ElasticsearchStore
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_core.documents import Document
 from langchain_community.document_loaders import PyPDFLoader
-from typing import List
-from app.core.config import settings
-from fastapi import UploadFile
-from PyPDF2 import PdfReader
-from langchain_core.documents import Document
-from typing import List
 
+from app.core.config import settings
 
 os.environ["GOOGLE_API_KEY"] = settings.GG_API
 

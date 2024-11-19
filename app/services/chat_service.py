@@ -8,6 +8,10 @@ from langchain_core.prompts import MessagesPlaceholder
 from langchain_openai import ChatOpenAI
 from langchain_core.documents import Document
 
+from typing import List
+import os
+from uuid import UUID
+
 from app.prompt_template.template import TEMPLATE, standalone_system_prompt
 from app.services.VectorStore_service import Vectordb_service
 from app.models.user_model  import User
@@ -15,9 +19,6 @@ from app.core.config import settings
 from app.schemas.response_schema import ResponseHis
 from app.models.history import history
 
-from typing import List
-import os
-from uuid import UUID
 
 vectordb = Vectordb_service()
 class Response_service:

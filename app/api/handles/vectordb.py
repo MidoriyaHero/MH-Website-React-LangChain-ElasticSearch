@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, File,UploadFile
-from app.services.VectorStore_service import Vectordb_service
 from typing import List
 
+from app.services.VectorStore_service import Vectordb_service
 
 vectordb_router = APIRouter()
 vector_service = Vectordb_service()

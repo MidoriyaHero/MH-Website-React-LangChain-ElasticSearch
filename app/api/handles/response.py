@@ -1,12 +1,14 @@
 from fastapi import APIRouter, HTTPException, Depends
-from app.schemas.response_schema import Response
-from app.services.chat_service import Response_service
 from typing import List
+from langchain_core.documents import Document
+
 from app.models.user_model import User
 from app.api.dependency.user_dependency import get_current_user
-from langchain_core.documents import Document
 from app.services.test import test_history
 from app.services.chat_service import Response_service
+from app.schemas.response_schema import Response
+from app.services.chat_service import Response_service
+
 response_router = APIRouter()
 
 def format_docs(docs: List[Document]):

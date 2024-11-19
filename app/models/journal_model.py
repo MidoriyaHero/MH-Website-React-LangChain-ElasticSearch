@@ -1,8 +1,8 @@
 from beanie import Document, Indexed, Link, before_event, Replace, Insert
 from uuid import UUID, uuid4
-from pydantic import Field, EmailStr
+from pydantic import Field
 from datetime import datetime
-from typing import Optional
+
 from app.models.user_model import User
 
 
