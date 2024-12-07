@@ -12,13 +12,13 @@ from langchain_community.document_loaders import PyPDFLoader
 
 from app.core.config import settings
 
-os.environ["GOOGLE_API_KEY"] = settings.GG_API
 
 class Vectordb_service:
     #set up for using gg embeding model
     def __init__(self):
+        print(settings.GG_API)
         if settings.EMBEDING_MODEL == 'models/embedding-001':
-            embeddings = GoogleGenerativeAIEmbeddings(model=settings.EMBEDING_MODEL, task_type= 'retrieval_document')
+            embeddings = GoogleGenerativeAIEmbeddings(model=settings.EMBEDING_MODEL, task_type= 'retrieval_document', google_api_key=settings.GG_API)
             self.vector_store = ElasticsearchStore(
                 index_name=settings.INDEX_NAME,
                 embedding=embeddings, 
