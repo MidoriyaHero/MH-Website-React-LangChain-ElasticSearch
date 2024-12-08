@@ -21,21 +21,49 @@ from app.models.HistoryModel import HistoryMessage, Session
 
 
 vectordb = Vectordb_service()
-class Response_service:
+class ChatService:
     @staticmethod
     async def listChatSession(user: User) -> list[Session]:
         sessions = await Session.find(Session.owner.id == user.id).to_list()
         return sessions
     
     @staticmethod
-    async def listChatMessage(session: Session) -> list[HistoryMessage]:
-        messages = await HistoryMessage.find(HistoryMessage.session.id == session.id).to_list()
+    async def retrieveChatfromSession(sessionid: UUID, user: User) -> list[HistoryMessage]:
+        messages = await HistoryMessage.find(HistoryMessage.SessionId == sessionid).to_list()
         return messages
+    
     @staticmethod
-    async def createSession(user: User) -> Session:
-        session = Session(session_name="default", owner=user)
+    async def createSession(user: User, session_name:str) -> Session:
+        session = Session(session_name=session_name, owner=user)
         return await session.insert()
     
+    @staticmethod
+    async def retrieveSession(sessionid: UUID, user: User)-> Session:
+        session = await Session.find_one(Session.session_id == sessionid, Session.owner.id == user.id)
+        return session
+    
+    @staticmethod
+    async def updateSessionName( user: User, sessionid: UUID, name: str) -> Session:
+        session = await ChatService.retrieveSession(user=user,sessionid= sessionid)
+        await session.update({"$set": {"session_name": name}})
+        await session.save()
+        return session
+    
+    @staticmethod 
+    async def deleteChat(session: Session) -> HistoryMessage:
+        messages = await ChatService.retrieveChatfromSession(session)
+        for message in messages:
+            await message.delete()
+
+    @staticmethod
+    async def deleteSession(user:User, sessionid: UUID)-> Session:
+        session = await ChatService.retrieveSession(sessionid,user)
+        if session:
+            await ChatService.deleteChat(session)
+            await session.delete()
+        else:
+            return None
+        
     @staticmethod
     async def createMessage(session: Session, role: str, content: str) -> HistoryMessage:
         message = HistoryMessage(role=role, content=content, session=session)
@@ -44,7 +72,7 @@ class Response_service:
     @staticmethod
     def get_session_history(session_id: UUID) -> MongoDBChatMessageHistory:
         return MongoDBChatMessageHistory(settings.MONGO_DB, session_id, database_name='BlogClient', collection_name="History")
-    
+
     @staticmethod
     def format_docs(docs: List[Document]):
         return "\n\n".join(doc.page_content for doc in docs)
@@ -58,7 +86,7 @@ class Response_service:
         retriever = vectordb.as_retriever()
 
         rag_chain_from_docs = (
-            RunnablePassthrough.assign(context=(lambda x: Response_service.format_docs(x["context"])))
+            RunnablePassthrough.assign(context=(lambda x: ChatService.format_docs(x["context"])))
             | prompt
             | llm
             | StrOutputParser()
@@ -71,10 +99,11 @@ class Response_service:
         )
 
         return chain.invoke({"question": query})
-    
-    def chat(query: str, sessionID: UUID):
+    @staticmethod
+    def chat(user: User, query: str, session_id: UUID):
         #todo create chat session and store in database
-        if sessionID:
+        session = ChatService.retrieveSession(session_id, user)
+        if session_id:
             parse_output = StrOutputParser()
             vectordb = Vectordb_service()
             retriever = vectordb.as_retriever()
@@ -111,40 +140,18 @@ class Response_service:
             # RAG chain with history
             with_message_history = RunnableWithMessageHistory(
                 rag_chain,
-                Response_service.get_session_history,
+                ChatService.get_session_history,
                 input_messages_key="question",
                 history_messages_key="history",
             )
             response = with_message_history.invoke(
                                                     {'question': query},
-                                                    {'configurable': {'session_id': sessionID}})
-            # sua lai thanh sessionid ko dung userid nua
-            return response
+                                                    {'configurable': {'session_id': str(session_id)}})
+            #add chat to DB
+            ChatService.createMessage(session, role='human', content=query)
+            ChatService.createMessage(session, role='system', content=response)
+            return {'role':'system', 'content': response}
         
         else:
             raise Exception("Something went wrong")
         
-    def history_chat(query: str, user: User):
-        #todo retrieve chat session from database to show on UI
-        pass
-
-    def delete_chat(query: str, user: User):
-        #todo delete chat session from database
-        pass
-
-# # Add single message
-# history.add_message(message)
-
-# # Add batch messages
-# history.add_messages([message1, message2, message3, ...])
-
-# # Add human message
-# history.add_user_message(human_message)
-
-# # Add ai message
-# history.add_ai_message(ai_message)
-
-# # Retrieve messages
-# messages = history.messages
-
-#The architechture should follow: https://community.aws/content/2j9daS4A39fteekgv9t1Hty11Qy/managing-chat-history-at-scale-in-generative-ai-chatbots?lang=en
