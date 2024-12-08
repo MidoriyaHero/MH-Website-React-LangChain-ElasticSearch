@@ -5,9 +5,9 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 from app.api import router
 from app.core.config import settings
-from app.models.user_model import User
-from app.models.journal_model import DailyJournal
-from app.models.history import history
+from app.models.UserModel import User
+from app.models.JournalModel import DailyJournal
+from app.models.HistoryModel import Session, HistoryMessage
 from app.api.router import router
 
 
@@ -18,7 +18,7 @@ async def lifespan(app: FastAPI):
         settings.MONGO_DB,
     )
     await init_beanie(client.BlogClient, 
-                      document_models=[User, DailyJournal, history])
+                      document_models=[User, DailyJournal, Session, HistoryMessage])
     yield
     # shutdown code goes here:
     client.close()

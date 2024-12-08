@@ -3,7 +3,7 @@ from uuid import UUID, uuid4
 from pydantic import Field
 from datetime import datetime
 
-from app.models.user_model import User
+from app.models.UserModel import User
 
 
 class DailyJournal(Document):

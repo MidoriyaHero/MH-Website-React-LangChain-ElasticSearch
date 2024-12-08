@@ -13,22 +13,37 @@ import os
 from uuid import UUID
 
 from app.prompt_template.template import TEMPLATE, standalone_system_prompt
-from app.services.VectorStore_service import Vectordb_service
-from app.models.user_model  import User
+from app.services.VectorStoreService import Vectordb_service
+from app.models.UserModel  import User
 from app.core.config import settings
-from app.schemas.response_schema import ResponseHis
-from app.models.history import history
+from app.schemas.ResponseSchema import Message
+from app.models.HistoryModel import HistoryMessage, Session
 
 
 vectordb = Vectordb_service()
 class Response_service:
-
-    def __init__(self):
-        #todo specify all variables needed
-        pass
+    @staticmethod
+    async def listChatSession(user: User) -> list[Session]:
+        sessions = await Session.find(Session.owner.id == user.id).to_list()
+        return sessions
+    
+    @staticmethod
+    async def listChatMessage(session: Session) -> list[HistoryMessage]:
+        messages = await HistoryMessage.find(HistoryMessage.session.id == session.id).to_list()
+        return messages
+    @staticmethod
+    async def createSession(user: User) -> Session:
+        session = Session(session_name="default", owner=user)
+        return await session.insert()
+    
+    @staticmethod
+    async def createMessage(session: Session, role: str, content: str) -> HistoryMessage:
+        message = HistoryMessage(role=role, content=content, session=session)
+        return await message.insert()
+    
     @staticmethod
     def get_session_history(session_id: UUID) -> MongoDBChatMessageHistory:
-        return MongoDBChatMessageHistory(settings.MONGO_DB, session_id, database_name='BlogClient', collection_name="history")
+        return MongoDBChatMessageHistory(settings.MONGO_DB, session_id, database_name='BlogClient', collection_name="History")
     
     @staticmethod
     def format_docs(docs: List[Document]):
@@ -57,9 +72,9 @@ class Response_service:
 
         return chain.invoke({"question": query})
     
-    def chat(query: str, user: User):
+    def chat(query: str, sessionID: UUID):
         #todo create chat session and store in database
-        if user:
+        if sessionID:
             parse_output = StrOutputParser()
             vectordb = Vectordb_service()
             retriever = vectordb.as_retriever()
@@ -102,11 +117,12 @@ class Response_service:
             )
             response = with_message_history.invoke(
                                                     {'question': query},
-                                                    {'configurable': {'session_id': str(user.user_id)}})
+                                                    {'configurable': {'session_id': sessionID}})
+            # sua lai thanh sessionid ko dung userid nua
             return response
         
         else:
-            raise Exception("User not found")
+            raise Exception("Something went wrong")
         
     def history_chat(query: str, user: User):
         #todo retrieve chat session from database to show on UI

@@ -4,14 +4,14 @@ from typing import Any
 from jose import jwt
 from pydantic import ValidationError
 
-from app.schemas.auth_schema import TokenPayLoad
+from app.schemas.AuthSchema import TokenPayLoad
 from app.core.config import settings
-from app.services.user_service import UserService
+from app.services.UserService import UserService
 from app.core.security import create_access_token, create_refresh_token
-from app.schemas.auth_schema import TokenSchema
-from app.schemas.user_schema import UserOut
-from app.api.dependency.user_dependency import get_current_user
-from app.models.user_model import User
+from app.schemas.AuthSchema import TokenSchema
+from app.schemas.UserSchema import UserOut
+from app.api.dependency.UserDependency import get_current_user
+from app.models.UserModel import User
 
 auth_router = APIRouter()
 

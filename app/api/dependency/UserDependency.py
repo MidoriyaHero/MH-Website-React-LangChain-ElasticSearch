@@ -5,10 +5,10 @@ from datetime import datetime
 from pydantic import ValidationError
 from json import loads
 
-from app.models.user_model import User
+from app.models.UserModel import User
 from app.core.config import settings
-from app.schemas.auth_schema import TokenPayLoad
-from app.services.user_service import UserService
+from app.schemas.AuthSchema import TokenPayLoad
+from app.services.UserService import UserService
 
 reusable_auth = OAuth2PasswordBearer(
     tokenUrl= f"{settings.API_STR}/auth/login",

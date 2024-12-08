@@ -2,12 +2,12 @@ from fastapi import APIRouter, HTTPException, Depends
 from typing import List
 from langchain_core.documents import Document
 
-from app.models.user_model import User
-from app.api.dependency.user_dependency import get_current_user
-from app.services.test import test_history
-from app.services.chat_service import Response_service
-from app.schemas.response_schema import Response
-from app.services.chat_service import Response_service
+from app.models.UserModel import User
+from app.api.dependency.UserDependency import get_current_user
+from app.services.Test import test_history
+from app.services.ChatService import Response_service
+from app.schemas.ResponseSchema import Response
+from app.services.ChatService import Response_service
 
 response_router = APIRouter()
 
@@ -27,10 +27,6 @@ async def single_query(query: str):
     except Exception as e:
         raise HTTPException(status_code = 500, detail = e)
     
-
-@response_router.post('/test_chat')
-async def test(query: str, session_id):
-    return test_history(query, session_id)
 
 @response_router.post('/chat/{user}')
 async def chat(query: str, current_user: User = Depends(get_current_user)):
