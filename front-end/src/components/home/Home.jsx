@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Button, Flex, Heading, Text, VStack, HStack } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
+import { HomeNavBar } from '../navbar/HomeNavBar';
 
 
 const Home = () => {
@@ -8,6 +9,7 @@ const Home = () => {
 
   return (
     <Box w="100%" h="100vh" bg="brand.50" p={4} >
+      <HomeNavBar/>
       {/* Hero Section */}
       <Flex
         direction="column"
@@ -27,10 +29,10 @@ const Home = () => {
           Engage in intelligent conversations and keep track of your thoughts with our journaling feature.
         </Text>
         <HStack spacing={4}>
-          <Button colorScheme="brand" onClick={() => navigate('/chat')}>
+          <Button colorScheme="brand" onClick={() => navigate('/service/chat')}>
             Start Chatting
           </Button>
-          <Button variant="outline" colorScheme="brand" onClick={() => navigate('/daily-journal')}>
+          <Button variant="outline" colorScheme="brand" onClick={() => navigate('/service/daily-journal')}>
             Write a Journal
           </Button>
         </HStack>
@@ -93,7 +95,7 @@ const Home = () => {
 
       {/* Footer Section */}
       <Flex justify="space-between" bg="brand.200" p={4} rounded="md" shadow="sm">
-        <Text>© 2024 MentalHealth Website</Text>
+        <Text>© 2024 BME LAB 513</Text>
       </Flex>
     </Box>
   );
