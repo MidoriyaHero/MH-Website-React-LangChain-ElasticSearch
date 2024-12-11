@@ -32,7 +32,7 @@ const Home = () => {
           <Button colorScheme="brand" onClick={() => navigate('/service/chat')}>
             Start Chatting
           </Button>
-          <Button variant="outline" colorScheme="brand" onClick={() => navigate('/service/daily-journal')}>
+          <Button variant="outline" colorScheme="brand" onClick={() => navigate('/service/journal')}>
             Write a Journal
           </Button>
         </HStack>

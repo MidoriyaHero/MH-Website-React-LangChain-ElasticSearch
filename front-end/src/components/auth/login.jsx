@@ -10,8 +10,8 @@ import {
 } from '@chakra-ui/form-control';
 import {useForm} from 'react-hook-form'
 import { useNavigate } from "react-router";
-import {ThemeToggle} from '../theme/ThemeToggle'
 import { useAuth } from '../../hooks/useAuth';
+import { FiHome } from 'react-icons/fi';
 
 export const Login = () => {
     const {
@@ -39,15 +39,15 @@ export const Login = () => {
         <Flex 
         direction='column' 
         alignItems ='center' 
-        background={('orange.200')}
+        background={('brand.200')}
         p={12}
         rounded={6}>
-            <Heading textColor='orange' mb={6}>Login</Heading>
+            <Heading textColor='brand' mb={6}>Login</Heading>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <FormControl isInvalid={errors.email}>
                     <Input
                     placeholder='Email'
-                    background={('orange.100')}
+                    background={('brand.100')}
                     type='email'
                     size='lg'
                     mt={6}
@@ -63,7 +63,7 @@ export const Login = () => {
                 <FormControl isInvalid={errors.email}>
                     <Input
                     placeholder='Password'
-                    background={('orange.100')}
+                    background={('brand.100')}
                     type='password'
                     size='lg'
                     mt={6}
@@ -77,20 +77,28 @@ export const Login = () => {
                 </FormControl>
 
                 <Button 
+                width='100%'
                 isLoading={isSubmitting}
-                loadingText='Logging in...'
-                width='100%' colorScheme='orange' textColor='orange' variant='outline' mt={3} mb ={0}
+                bg="brand.300"
+                _hover={{ bg: "brand.500" }}
+                mt={3} mb ={0}
                 type = 'submit'>
                     Login
                 </Button>
             </form>
 
             <Button 
-            onClick={()=> navigate('/register', {replace:true})} 
-            width='100%' colorScheme='orange' textColor='orange.300' variant='link' mt={3} mb={2}>
-                Or Register
+            onClick={()=> navigate('/signup', {replace:true})} 
+            colorScheme='brand' textColor='brand.700' variant='link' mt={3} mb={2}>
+                Or Signup
             </Button>
-            <ThemeToggle showLable={true}/>
+            <Button
+          leftIcon={<FiHome />}
+          justifyContent='flex-end'
+          bg="brand.300"
+          _hover={{ bg: "brand.500" }}
+          onClick={() => navigate('/')}
+        >Back to Home</Button>
         </Flex>
         </Flex>
 }

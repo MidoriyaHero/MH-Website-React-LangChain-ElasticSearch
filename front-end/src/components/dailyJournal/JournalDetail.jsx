@@ -2,35 +2,35 @@ import { useEffect, useRef, useState } from "react"
 import { useNavigate, useParams } from "react-router"
 import  axiosInstance  from '../../services/axios'
 import { Button, Center, Container, Spinner, Text, useToast } from "@chakra-ui/react"
-import { CRUDTodo } from "./CRUDTodo"
+import { CRUDJournal } from "./CRUDJournal"
 
-export const TodoDetail = () => {
-    const [todo, setTodo] = useState({})
+export const JournalDetail = () => {
+    const [Journal, setJournal] = useState({})
     const [loading, setLoading] = useState(true)
     const isMounted = useRef(false)
-    const {todoId} = useParams()
+    const {JournalId} = useParams()
     const navigate = useNavigate()
     const toast = useToast()
     useEffect(() =>{
         if (isMounted.current) return;
-        fetchTodo();
+        fetchJournal();
         isMounted.current = true
-    }, [todoId])
+    }, [JournalId])
 
-    const fetchTodo = () => {
+    const fetchJournal = () => {
         setLoading(true)
-        axiosInstance.get(`/todo/${todoId}`)
+        axiosInstance.get(`/journal/${JournalId}`)
         .then((response) =>{
-            setTodo(response.data)
+            setJournal(response.data)
         })
         .catch((error) => console.log(error))
         .finally(() => {
             setLoading(false)
         })
     }
-    const delTodo = () => {
+    const delJournal = () => {
       setLoading(true)
-      axiosInstance.delete(`/todo/${todoId}`)
+      axiosInstance.delete(`journal/${JournalId}`)
       .then(() =>{
         toast({
           title: 'Deleted!',
@@ -78,21 +78,21 @@ export const TodoDetail = () => {
         alignItems="center"
         justifyContent="space-between"
       >
-        <Text fontSize={22}>{todo.title}</Text>
+        <Text fontSize={22}>{Journal.title}</Text>
         <Text bg="brand.100" mt={2} p={2} rounded="lg">
-          {todo.description}
+          {Journal.description}
         </Text>
-        <CRUDTodo
+        <CRUDJournal
           my={3}
           editable={true}
           defaultValues={{
-            title: todo.title,
-            description: todo.description,
-            status: todo.status,
+            title: Journal.title,
+            description: Journal.description,
+            status: Journal.status,
           }}
-          onSuccess={fetchTodo}
+          onSuccess={fetchJournal}
         />
-        <Button isLoading={loading} colorScheme="red" width='100%' onClick={delTodo} >
+        <Button isLoading={loading} colorScheme="red" width='100%' onClick={delJournal} >
           Delete
         </Button>
         </Container>

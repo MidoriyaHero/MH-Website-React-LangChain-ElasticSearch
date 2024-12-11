@@ -3,7 +3,7 @@ import { Controller, useForm } from "react-hook-form"
 import { useParams } from "react-router-dom"
 import axiosIntance from '../../services/axios'
 
-export const CRUDTodo = ({
+export const CRUDJournal = ({
   editable = false,
   defaultValues = {},
   onSuccess = () => {},
@@ -11,19 +11,19 @@ export const CRUDTodo = ({
 }) => {
   const {isOpen, onOpen, onClose} = useDisclosure()
   const toast =  useToast()
-  const {todoId} = useParams()
+  const {journalId} = useParams()
   const {handleSubmit, register, control, formState:{errors, isSubmitting }} = useForm({
     defaultValues: {...defaultValues}
   })
   const onSubmit = async (values) => {
     try {
       if (editable) {
-        await axiosIntance.put(`/todo/${todoId}`, values)
+        await axiosIntance.put(`/journal/${journalId}`, values)
       } else {
-        await axiosIntance.post(`/todo/create`, values)
+        await axiosIntance.post(`/journal/create`, values)
       }
       toast({
-        title: editable? 'Todo Updated' : 'Todo Added',
+        title: editable? 'journal Updated' : 'journal Added',
         status: 'success',
         isClosable: true,
         duration: 3000
@@ -57,7 +57,7 @@ export const CRUDTodo = ({
             <ModalBody>
               <FormControl isInvalid={errors.title} >
               <Input
-                  placeholder='Todo Title'
+                  placeholder='journal Title'
                   background={('brand.100')}
                   type='text'
                   variant='filled'

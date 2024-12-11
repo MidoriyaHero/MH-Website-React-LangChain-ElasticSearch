@@ -11,6 +11,7 @@ import {
 import { FiHome, FiMessageCircle, FiBook, FiLogOut } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 
+
 export const LeftNav = () => {
   const navigate = useNavigate();
 
@@ -75,7 +76,7 @@ export const LeftNav = () => {
           justifyContent="flex-start"
           bg="brand.300"
           _hover={{ bg: "brand.500" }}
-          onClick={() => navigate('/daily-journal')}
+          onClick={() => navigate('/service/journal')}
         >
           Daily Journal
         </Button>
