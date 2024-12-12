@@ -3,7 +3,7 @@ from uuid import UUID
 from typing import List
 
 from app.models.UserModel import User
-from app.api.dependency.UserDependency import get_current_user
+from app.api.v1.dependency.UserDependency import get_current_user
 from app.schemas.JournalSchema import JournalOut, JournalCreate, JournalUpdate
 from app.services.JournalService import JournalService
 from app.models.JournalModel import DailyJournal

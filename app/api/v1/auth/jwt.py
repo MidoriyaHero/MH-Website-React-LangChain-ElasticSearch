@@ -10,7 +10,7 @@ from app.services.UserService import UserService
 from app.core.security import create_access_token, create_refresh_token
 from app.schemas.AuthSchema import TokenSchema
 from app.schemas.UserSchema import UserOut
-from app.api.dependency.UserDependency import get_current_user
+from app.api.v1.dependency.UserDependency import get_current_user
 from app.models.UserModel import User
 
 auth_router = APIRouter()

@@ -4,9 +4,9 @@ from langchain_core.documents import Document
 from uuid import UUID
 
 from app.models.UserModel import User
-from app.api.dependency.UserDependency import get_current_user
+from app.api.test.dependency.UserDependency import get_current_user
 
-from app.services.ChatService import ChatService
+from app.services.Test import ChatService
 from app.schemas.ResponseSchema import Message
 
 
@@ -17,7 +17,7 @@ def format_docs(docs: List[Document]):
 @response_router.post("/Single-query/", response_model= Message)
 async def single_query(query: str):
     try:
-        response = ChatService.response(query)
+        response = await ChatService.response(query)
         format_doc = format_docs(response['context'])
         dict_response = {
             'role': 'system',
@@ -29,7 +29,7 @@ async def single_query(query: str):
 
 @response_router.post('/chat/{sessionid}', response_model = Message)
 async def chat(query: str, session_id: UUID, current_user: User = Depends(get_current_user)):
-    return ChatService.chat(query=query,user = current_user, session_id=session_id)
+    return await ChatService.chat(query=query,user = current_user, session_id=session_id)
 
 @response_router.post("/createSession")
 async def create_session( session_name: str,current_user: User = Depends(get_current_user)):

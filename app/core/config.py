@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     ES_URL: str = "http://localhost:9200"
     MODEL_NAME: str = 'gemini-pro'
     PROJECT_NAME: str = 'Mental RAG System'
-    API_STR: str = 'api'
+    API_STR: str = 'api/v1'
     ALGORITHM: str = 'HS256'
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 15
     REFRESH_TOKEN_EXPIRE_MINUTES: int = 60*24*7 # 7days
