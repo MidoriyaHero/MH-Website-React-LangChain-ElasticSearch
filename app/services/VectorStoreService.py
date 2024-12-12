@@ -17,7 +17,8 @@ class Vectordb_service:
     #set up for using gg embeding model
     def __init__(self):
         if settings.EMBEDING_MODEL == 'models/embedding-001':
-            embeddings = GoogleGenerativeAIEmbeddings(model=settings.EMBEDING_MODEL, task_type= 'retrieval_document', google_api_key=settings.GG_API)
+            embeddings = OpenAIEmbeddings(model="text-embedding-3-small",openai_api_key=settings.OPENAI_API_KEY)
+
             self.vector_store = ElasticsearchStore(
                 index_name=settings.INDEX_NAME,
                 embedding=embeddings, 

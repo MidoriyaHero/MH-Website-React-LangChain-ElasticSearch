@@ -96,27 +96,23 @@ class ChatService:
     async def chat(user: User, query: str, session_id: UUID):
         #todo create chat session and store in database
         session = await ChatService.retrieveSession(session_id, user)
-        client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-        try:
-        # Call OpenAI's ChatGPT model
-            response = client.chat.completions.create(
-                messages=[
-                            {
-                                "role": "user",
-                                "content": query,
-                            }
-                        ],
-                model="gpt-4o",
-                
+        client = OpenAI(api_key=settings.OPENAI_API_KEY)
+        completion = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": "Hello!"}
+            ]
             )
-            # Extract and return the reply from the model
-            response = response.choices[0].message.content
-        except :
-            raise Exception
+
+        print(completion.choices[0].message)
+
+        # Extract and return the reply from the model
+        response = completion.choices[0].message
 
         #add chat to DB
-        ChatService.createMessage(session, role='user', content=query)
-        ChatService.createMessage(session, role='system', content=response)
+        await ChatService.createMessage(session, role='user', content=query)
+        await ChatService.createMessage(session, role='system', content=response)
         return {'role':'system', 'content': response}
         
         
