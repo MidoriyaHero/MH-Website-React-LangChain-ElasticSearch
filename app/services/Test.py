@@ -28,7 +28,8 @@ class ChatService:
     
     @staticmethod
     async def retrieveChatfromSession(sessionid: UUID, user: User) -> list[HistoryMessage]:
-        messages = await HistoryMessage.find(HistoryMessage.SessionId == sessionid).to_list()
+        session = await ChatService.retrieveSession(sessionid, user)
+        messages = await HistoryMessage.find(HistoryMessage.session.id == session.id).to_list()
         return messages
     
     @staticmethod
@@ -74,24 +75,21 @@ class ChatService:
     
     @staticmethod
     async def response(query):
-        llm = ChatOpenAI(model="gpt-4o-mini-2024-07-18",temperature=0, openai_api_key=settings.OPENAI_API_KEY)
-        #llm = ChatGoogleGenerativeAI(model="gemini-pro")
-        #prompt = hub.pull("rlm/rag-prompt")
-        prompt=ChatPromptTemplate.from_template(TEMPLATE)
+        client = OpenAI(api_key=settings.OPENAI_API_KEY)
+        completion = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": query}
+            ]
+            )
 
-        rag_chain_from_docs = (
-            RunnablePassthrough.assign(context=(lambda x: ChatService.format_docs(x["context"])))
-            | prompt
-            | llm
-            | StrOutputParser()
-        )
+        print(completion.choices[0].message.content)
 
+        # Extract and return the reply from the model
+        response = completion.choices[0].message.content
 
-        chain = RunnablePassthrough.assign().assign(
-            answer=rag_chain_from_docs
-        )
-
-        return chain.invoke({"question": query})
+        return ({"content": response, 'role':'bot'})
     @staticmethod
     async def chat(user: User, query: str, session_id: UUID):
         #todo create chat session and store in database
@@ -101,15 +99,14 @@ class ChatService:
             model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": "Hello!"}
+                {"role": "user", "content": query}
             ]
             )
 
-        print(completion.choices[0].message)
+        print(completion.choices[0].message.content)
 
         # Extract and return the reply from the model
-        response = completion.choices[0].message
-
+        response = completion.choices[0].message.content
         #add chat to DB
         await ChatService.createMessage(session, role='user', content=query)
         await ChatService.createMessage(session, role='system', content=response)

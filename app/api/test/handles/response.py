@@ -18,12 +18,7 @@ def format_docs(docs: List[Document]):
 async def single_query(query: str):
     try:
         response = await ChatService.response(query)
-        format_doc = format_docs(response['context'])
-        dict_response = {
-            'role': 'system',
-            'content': response['answer']
-        }
-        return dict_response
+        return response
     except Exception as e:
         raise HTTPException(status_code = 500, detail = e)
 

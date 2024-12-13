@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
 
-from app.api.v1.handles import user, journal
-from app.api.v1.auth import jwt
-from app.api.v1.handles import response
+from app.api.test.handles import user, journal
+from app.api.test.auth import jwt
+from app.api.test.handles import response
 
 router = APIRouter()
 

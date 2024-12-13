@@ -41,7 +41,7 @@ export const LeftNav = () => {
             U
           </Text>
         </Box>
-        <Heading as="h3" size='xl' mb={2} color="brand.600">
+        <Heading as="h2" size='md' mb={2} color="brand.600">
           Hello, User!
         </Heading>
         <Text fontSize='xl' color="gray.600">

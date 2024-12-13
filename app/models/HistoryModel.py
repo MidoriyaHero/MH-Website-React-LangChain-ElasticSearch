@@ -16,7 +16,7 @@ class Session(Document):
         name = 'Session'
 
 class HistoryMessage(Document):
-    SessionId: UUID
+    messageID: UUID = Field(default_factory = uuid4, unique = True)
     role: Optional[str]
     content: Optional[str]
     create_at: datetime = Field(default_factory = datetime.now)

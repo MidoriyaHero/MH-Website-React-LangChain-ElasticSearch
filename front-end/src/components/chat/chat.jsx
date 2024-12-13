@@ -23,7 +23,7 @@ const Chat = () => {
     setMessages((prev) => [...prev, userMessage]);
   
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/chat", {
+      const response = await fetch("http://127.0.0.1:8000/api/v1/chatbot-services", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -61,7 +61,7 @@ const Chat = () => {
 
   const fetchMessagesForSession = async (sessionId) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/chat/session/${sessionId}`);
+      const response = await fetch(`http://127.0.0.1:8000/api/v1/chatbot-services/chat/${sessionId}`);
       if (response.ok) {
         const data = await response.json();
         setMessages(data.messages);
