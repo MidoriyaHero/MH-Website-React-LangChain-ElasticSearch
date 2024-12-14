@@ -13,7 +13,7 @@ export const Authenticated = (props) => {
     useEffect(() => {
       console.log(auth.isAuthenticated)
       if (!auth.isAuthenticated) {
-        navigate("/login", { replace: true, state: { from: location } });
+        navigate("/", { replace: true, state: { from: location } });
       } else {
         setIsVerified(true);
       }

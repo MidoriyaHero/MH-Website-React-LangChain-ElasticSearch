@@ -15,6 +15,7 @@ const Theme = extendTheme({
       900: '#1a2a0d', // Darkest
     },
     complementary: {
+      red: '#FF0000',
       yellow: '#FFF8D6', // Optimistic yellow
       pink: '#FADCD9',   // Soft peach/pink for calm
       blue: '#B3E5FC',   // Soothing blue for trust

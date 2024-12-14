@@ -6,25 +6,37 @@ import { Register} from "./components/auth/register";
 import { PublicRoute} from './components/auth/PublicRoute';
 import { JournalDetail } from './components/dailyJournal/JournalDetail'
 import { JournalList } from './components/dailyJournal/JournalList'
+import { AuthConsumer, AuthProvider } from "./context/JWTAuthContext";
+import { Flex, Spinner } from "@chakra-ui/react";
+import { Authenticated } from "./components/auth/Authenticated";
 
 function App() {
   return (
+    <>
+    <AuthProvider>
     <Router>
-        <Routes>
-          <Route path="/" element={<Home/>} />
-          <Route path='/login' element ={<PublicRoute> <Login /> </PublicRoute>} />
-          <Route path='/signup' element ={<PublicRoute> <Register /> </PublicRoute>} />
-          
-          <Route path='/service'>
-            <Route path="/service/chat" element={<Chat />} />
-            
-            <Route path='/service/journal' element ={<JournalList/> } />
-            <Route path='/service/journal/:todoId' element ={<JournalDetail/> } />
+      <AuthConsumer>
+        {(auth)=> !auth.isInitialized? (
+          <Flex height = '100vh' alignItems = 'center' justifyContent = 'center'>
+            <Spinner thickness='4px' speed='0.5s' emptyColor='brand.200' color="brand.500" />
+          </Flex>
+        ): (
+          <Routes>
+            <Route path="/" element={<PublicRoute><Home/></PublicRoute>} />
+            <Route path='/login' element ={<PublicRoute> <Login /> </PublicRoute>} />
+            <Route path='/signup' element ={<PublicRoute> <Register /> </PublicRoute>} />
+            <Route path='/service'>
+              {/* <Route path="/service/chat" element={<Authenticated><Chat /></Authenticated>} /> */}
+              <Route path='/service/journal' element ={<Authenticated><JournalList/></Authenticated> } />
+              <Route path='/service/journal/:JournalId' element ={<Authenticated><JournalDetail/></Authenticated> } />
           </Route>
-          <Route path='*' element ={<Navigate to ='/' />} />
+            <Route path='*' element ={<Navigate to ='/' />} />
         </Routes>
+        )}
+      </AuthConsumer>
     </Router>
-    
+    </AuthProvider>
+    </>
   );
 }
 

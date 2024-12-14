@@ -12,7 +12,7 @@ export const PublicRoute = (props) => {
     useEffect(() => {
       console.log(auth.isAuthenticated)
       if (auth.isAuthenticated) {
-        navigate("/", { replace: true, state: { from: location } });
+        navigate("/service/journal", { replace: true, state: { from: location } });
       } else {
         setIsVerified(true);
       }

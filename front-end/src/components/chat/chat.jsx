@@ -10,7 +10,7 @@ import {
   Divider,
 } from '@chakra-ui/react';
 import { LeftNav } from '../navbar/LeftNav';
-import  ChatSessionList  from './ChatSessionList'
+import  ChatSession  from './ChatSessionList'
 const Chat = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -23,7 +23,7 @@ const Chat = () => {
     setMessages((prev) => [...prev, userMessage]);
   
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/v1/chatbot-services", {
+      const response = await fetch("http://127.0.0.1:8000/api/v1/chatbot-services/Single-query/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -33,7 +33,7 @@ const Chat = () => {
   
       if (response.ok) {
         const data = await response.json();
-        const botMessage = { sender: "bot", text: data.reply };
+        const botMessage = { sender: "bot", text: data.content };
         setMessages((prev) => [...prev, botMessage]);
       } else {
         const errorMessage = await response.text();
@@ -87,7 +87,7 @@ const Chat = () => {
 
       {/* Chat Session List */}
       <Box w="15%" bg="gray.50" p={4} overflowY="auto">
-        <ChatSessionList onSelectSession={handleSessionSelect} />
+        <ChatSession onSelectSession={handleSessionSelect} />
       </Box>
       
       {/* Chat Interface */}

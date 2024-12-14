@@ -7,7 +7,7 @@ export const JournalCard = ({Journal}) => {
         <Flex bg='brand.200' minHeight='3rem' my={3} p={3} rounded='lg' alignItems='center' justifyContent='space-between' _hover={{
             opacity: 0.9,
             cursor:'pointer',
-            transform:"translateY(-3px)"}} onClick={()=> navigate(`/${Journal.Journal_id}`, {replace: true})} >
+            transform:"translateY(-3px)"}} onClick={()=> navigate(`/service/journal/${Journal.journal_id}`, {replace: true})} >
                 <Text>
                     {Journal.title}
                 </Text>

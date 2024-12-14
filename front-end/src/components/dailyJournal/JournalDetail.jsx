@@ -30,7 +30,7 @@ export const JournalDetail = () => {
     }
     const delJournal = () => {
       setLoading(true)
-      axiosInstance.delete(`journal/${JournalId}`)
+      axiosInstance.delete(`/journal/${JournalId}`)
       .then(() =>{
         toast({
           title: 'Deleted!',
@@ -38,7 +38,7 @@ export const JournalDetail = () => {
           isClosable: true,
           duration: 3000
         })
-        navigate('/')
+        navigate('/service/journal')
       })
       .catch((error) => toast({
         title: 'Something went wrong, please try again!',
@@ -54,7 +54,7 @@ export const JournalDetail = () => {
         return (
             <Container>
                 <Center mt={6} >
-                    <Spinner thickness='4px' speed='0.5s' emptyColor='green.200' color="green.500" />
+                    <Spinner thickness='4px' speed='0.5s' emptyColor='brand.200' color="brand.500" />
                 </Center>
             </Container>
         )
@@ -64,7 +64,7 @@ export const JournalDetail = () => {
       <Container mt={6} >
       <Button
         colorScheme='yellow'
-        onClick={() => navigate("/", { replace: true })}
+        onClick={() => navigate("/service/journal", { replace: true })}
       >
         Back
       </Button>

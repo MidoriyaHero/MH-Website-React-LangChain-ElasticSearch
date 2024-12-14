@@ -11,14 +11,14 @@ export const CRUDJournal = ({
 }) => {
   const {isOpen, onOpen, onClose} = useDisclosure()
   const toast =  useToast()
-  const {journalId} = useParams()
+  const {JournalId} = useParams()
   const {handleSubmit, register, control, formState:{errors, isSubmitting }} = useForm({
     defaultValues: {...defaultValues}
   })
   const onSubmit = async (values) => {
     try {
       if (editable) {
-        await axiosIntance.put(`/journal/${journalId}`, values)
+        await axiosIntance.put(`/journal/${JournalId}`, values)
       } else {
         await axiosIntance.post(`/journal/create`, values)
       }

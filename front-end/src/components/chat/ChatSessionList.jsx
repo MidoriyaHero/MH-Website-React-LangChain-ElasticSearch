@@ -7,7 +7,7 @@ const ChatSession = ({ onSelectSession }) => {
   useEffect(() => {
     const fetchSessions = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/chat/sessions");
+        const response = await fetch("http://127.0.0.1:8000/api/v1/chatbot-services/listSession");
         if (response.ok) {
           const data = await response.json();
           setSessions(data.sessions);
