@@ -10,11 +10,16 @@ import {
 } from '@chakra-ui/react';
 import { FiHome, FiMessageCircle, FiBook, FiLogOut } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 
 
 export const LeftNav = () => {
   const navigate = useNavigate();
-
+  const {logout} = useAuth();
+  const handleClick = () => {
+    logout();
+    navigate('/');
+  };
   return (
     <Box
       w="100%"
@@ -58,7 +63,7 @@ export const LeftNav = () => {
           justifyContent="flex-start"
           bg="brand.300"
           _hover={{ bg: "brand.500" }}
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/home')}
         >
           Home
         </Button>
@@ -93,7 +98,7 @@ export const LeftNav = () => {
           color="red.500"
           variant="ghost"
           _hover={{ bg: "red.50" }}
-          onClick={() => console.log('Logout clicked')}
+          onClick={handleClick}
         >
           Logout
         </Button>

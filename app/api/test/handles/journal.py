@@ -26,7 +26,7 @@ async def get_journal_by_id(journal_id: UUID, current_user: User = Depends(get_c
 async def update(journal_id: UUID, data: JournalUpdate, current_user: User = Depends(get_current_user)):
     return await JournalService.update_journal(current_user, journal_id, data)
 
-@journal_router.delete('{journal_id}')
+@journal_router.delete('/{journal_id}')
 async def delete(journal_id: UUID, current_user: User = Depends(get_current_user)):
     await JournalService.delete_journal(current_user,journal_id)
     return {"Message":"Successfully deleted!"}

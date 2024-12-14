@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = 'Mental RAG System'
     API_STR: str = 'api/v1'
     ALGORITHM: str = 'HS256'
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 15
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60*24*7
     REFRESH_TOKEN_EXPIRE_MINUTES: int = 60*24*7 # 7days
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = ['http://localhost:3000']
     PROJECT_NAME: str = 'MENTALHEALTH APP'
