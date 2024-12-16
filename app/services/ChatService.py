@@ -79,7 +79,7 @@ class ChatService:
     
     @staticmethod
     async def response(query):
-        llm = ChatOpenAI(model="gpt-4o-mini-2024-07-18",temperature=0, openai_api_key=settings.OPENAI_API_KEY)
+        llm = ChatOpenAI(model="gpt-4o-mini",temperature=0, openai_api_key=settings.OPENAI_API_KEY)
         #llm = ChatGoogleGenerativeAI(model="gemini-pro")
         #prompt = hub.pull("rlm/rag-prompt")
         prompt=ChatPromptTemplate.from_template(TEMPLATE)
@@ -116,7 +116,7 @@ class ChatService:
                 ]
             )
 
-            llm = ChatOpenAI(model="gpt-4o-mini-2024-07-18",temperature=0, openai_api_key=settings.OPENAI_API_KEY)
+            llm = ChatOpenAI(model="gpt-4o-mini",temperature=0, openai_api_key=settings.OPENAI_API_KEY)
             question_chain = standalone_question_prompt | llm | parse_output
             retriever_chain = RunnablePassthrough.assign(context=question_chain | retriever | (lambda docs: "\n\n".join([d.page_content for d in docs])))
             rag_system_prompt = """Answer the question based only on the following context: \

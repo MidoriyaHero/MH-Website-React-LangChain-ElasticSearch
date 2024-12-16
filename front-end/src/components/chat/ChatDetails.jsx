@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "../../services/axios";
 import { Box, Button, Flex, Input, Spinner, Text, VStack, HStack, useToast } from "@chakra-ui/react";
@@ -12,6 +12,8 @@ const ChatDetail = () => {
   const [sending, setSending] = useState(false); // State for sending message
   const navigate = useNavigate();
   const toast = useToast();
+  
+  const messagesEndRef = useRef(null); // Create a ref for the messages container
   
   // Fetch chat messages for this session
   const fetchMessages = async () => {
@@ -67,6 +69,12 @@ const ChatDetail = () => {
       console.error("Error deleting message:", error);
     }
   };
+
+  // Scroll to the latest message
+  useEffect(() => {
+    // Scroll to the bottom when messages change or when the component mounts
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]); // Dependency array is `messages` so it runs whenever messages change
 
   // Fetch messages when component mounts
   useEffect(() => {
@@ -124,12 +132,12 @@ const ChatDetail = () => {
                 >
                   <Text fontWeight="bold">{msg.role === "user" ? "You" : "Lover"}</Text>
                   <Text>{renderMarkdownResponse(msg.content)}</Text>
-                  
                 </Box>
               ))
             ) : (
               <Text>No messages yet. Start the conversation!</Text>
             )}
+            <div ref={messagesEndRef} /> {/* Add a div with ref to scroll to it */}
           </VStack>
         )}
       </Box>

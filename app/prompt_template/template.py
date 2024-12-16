@@ -7,24 +7,32 @@ Context: {context}
 Answer:
 """
 
-standalone_system_prompt = """
-Given a chat history and a follow-up question, rephrase the follow-up question to be a standalone question. \
-Do NOT answer the question, just reformulate it if needed, otherwise return it as is. \
-Only return the final standalone question. \
-"""
-
 #todo create prompt for chat history - this part need to sumarize more specific
 prompt_history = """
-Here is conservation 20 messages between AI and Human, your task is to summarize this conservation into paragraphs \
-with 250 words. 1 paragraph for  AI messages, 1 paragraph for Human messages.
-{messages_history}
+You are a helpful Vietnamese assistant with given mood. Help the user answer any questions or chat with them about anything they want.
+Below are descriptions of your personality traits, talk to users according to those traits:
+{bot_personality}
+
+User personality:
+{user_personality}
+Current conversation:
+{history}
 """
 
 #todo create prompt for evaluate journal
 journal_evaluate_prompt = """
-Base on the checklist {checklist}, your task is to evaluate these daily journals of patient. Focus on:\
+your task is to evaluate these daily journals of patient below into types of moods \
+and give the result in top 3 moods patient have in the journal. Just return result in json format.\
+Don't add any other comments.
 
+The mood labels should be either [
+Joyful: happiness, delight, tenderness, love;
+Sad: sadness, melancholy, nostalgia, loneliness;
+Anxious: anxiety, fear, apprehension, uncertainty;
+Irritable: anger, aggression, intolerance, disappointment;
+Guilty: guilt, shame, remorse, self-criticism;].
 
+daily journals: {daily_journal}
 """
 #todo create prompt for evaluate response
 response_evaluate_prompt = """

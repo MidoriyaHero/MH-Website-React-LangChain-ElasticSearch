@@ -13,7 +13,7 @@ from typing import List
 import os
 from uuid import UUID
 
-from app.prompt_template.template import TEMPLATE, standalone_system_prompt
+from app.prompt_template.template import TEMPLATE, prompt_history
 from app.models.UserModel  import User
 from app.core.config import settings
 from app.schemas.ResponseSchema import Message
