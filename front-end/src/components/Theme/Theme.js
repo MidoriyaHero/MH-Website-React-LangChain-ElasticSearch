@@ -50,7 +50,7 @@ const Theme = extendTheme({
           bg: 'complementary.lavender',
           color: 'black',
           _hover: {
-            bg: 'complementary.blue',
+            bg: 'brand.200',
           },
         },
       },

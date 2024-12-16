@@ -50,16 +50,16 @@ class ChatService:
         return session
     
     @staticmethod 
-    async def deleteChat(session: Session) -> HistoryMessage:
-        messages = await ChatService.retrieveChatfromSession(session)
+    async def deleteChat(user: User, sessionid: UUID) -> HistoryMessage:
+        messages = await ChatService.retrieveChatfromSession(sessionid=sessionid, user= user)
         for message in messages:
             await message.delete()
 
     @staticmethod
     async def deleteSession(user:User, sessionid: UUID)-> Session:
-        session = await ChatService.retrieveSession(sessionid,user)
+        session = await ChatService.retrieveSession(sessionid=sessionid,user=user)
         if session:
-            await ChatService.deleteChat(session)
+            await ChatService.deleteChat(user=user,sessionid=sessionid)
             await session.delete()
         else:
             return None

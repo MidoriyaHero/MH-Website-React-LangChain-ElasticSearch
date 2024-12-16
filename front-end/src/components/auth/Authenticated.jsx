@@ -11,16 +11,18 @@ export const Authenticated = (props) => {
   
 
     useEffect(() => {
-      console.log(auth.isAuthenticated)
-      if (!auth.isAuthenticated) {
-        navigate("/", { replace: true, state: { from: location } });
-      } else {
-        setIsVerified(true);
+      if (auth.isInitialized) {
+        if (!auth.isAuthenticated) {
+          navigate("/", { replace: true, state: { from: location } });
+        } else {
+          setIsVerified(true);
+        }
       }
-    }, [auth.isAuthenticated, location, navigate]);
-  
-    if (!isVerified) {
-      return null;
+    }, [auth.isAuthenticated, auth.isInitialized, location, navigate]);
+    
+    if (!auth.isInitialized || !isVerified) {
+      return null; // Or show a loading spinner
     }
-    return <>{children}</>;
+    
+    return <>{children}</>;    
   };

@@ -63,7 +63,7 @@ export const JournalDetail = () => {
         <>
       <Container mt={6} >
       <Button
-        colorScheme='yellow'
+        variant='calming'
         onClick={() => navigate("/service/journal", { replace: true })}
       >
         Back
@@ -92,7 +92,7 @@ export const JournalDetail = () => {
           }}
           onSuccess={fetchJournal}
         />
-        <Button isLoading={loading} colorScheme="red" width='100%' onClick={delJournal} >
+        <Button isLoading={loading} bg="complementary.red" width='100%' mt='3' onClick={delJournal} _hover='complementary.red'>
           Delete
         </Button>
         </Container>

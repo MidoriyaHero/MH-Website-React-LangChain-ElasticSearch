@@ -54,15 +54,17 @@ const initialState = {
     const isMounted = useRef(false);
   
     useEffect(() => {
-      if (isMounted.current) return;
       const initialize = async () => {
         try {
           const accessToken = Cookies.get("accessToken");
           if (accessToken && validateToken(accessToken)) {
-            setSession(accessToken);
-  
+            setSession(accessToken); // Ensure Axios headers are set here
+    
+            // Fetch the user details from the backend
             const response = await axiosInstance.get("/user/me");
             const { data: user } = response;
+    
+            // Update the authentication state
             dispatch({
               type: "INITIALIZE",
               payload: {
@@ -71,6 +73,7 @@ const initialState = {
               },
             });
           } else {
+            // If no valid token, reset session
             dispatch({
               type: "INITIALIZE",
               payload: {
@@ -80,7 +83,7 @@ const initialState = {
             });
           }
         } catch (error) {
-          console.error(error);
+          console.error("Error during auth initialization:", error);
           dispatch({
             type: "INITIALIZE",
             payload: {
@@ -90,9 +93,10 @@ const initialState = {
           });
         }
       };
+    
       initialize();
-      isMounted.current = true;
     }, []);
+    
   
     const getTokens = async (email, password) => {
       const formData = new FormData();

@@ -22,7 +22,7 @@ async def single_query(query: str):
     except Exception as e:
         raise HTTPException(status_code = 500, detail = e)
 
-@response_router.post('/chat/{sessionid}', response_model = Message)
+@response_router.post('/chat/{session_id}', response_model = Message)
 async def chat(query: str, session_id: UUID, current_user: User = Depends(get_current_user)):
     return await ChatService.chat(query=query,user = current_user, session_id=session_id)
 
@@ -34,18 +34,18 @@ async def create_session( session_name: str,current_user: User = Depends(get_cur
 async def list_session(current_user: User = Depends(get_current_user)):
     return await ChatService.listChatSession(current_user)
 
-@response_router.get('/getSession/{sesion_id}')
+@response_router.get('/getSession/{session_id}')
 async def get_session(session_id: UUID, current_user: User = Depends(get_current_user)):
     return await ChatService.retrieveSession(session_id, current_user)
-@response_router.put('/renameSession/{sesion_id}')
+@response_router.put('/renameSession/{session_id}')
 async def rename_session(session_id: UUID, name: str, current_user: User = Depends(get_current_user)):
     return await ChatService.updateSessionName(user=current_user, sessionid=session_id, name=name)
 
-@response_router.delete('/deleteSession/{sesion_id}')
+@response_router.delete('/deleteSession/{session_id}')
 async def delete_session(session_id: UUID, current_user: User = Depends(get_current_user)):
     await ChatService.deleteSession(user=current_user,sessionid= session_id)
     return {'Messages':'Deleted session'}
 
-@response_router.get('/listMessages/{sesion_id}')
+@response_router.get('/listMessages/{session_id}')
 async def list_messages(session_id: UUID, current_user: User = Depends(get_current_user)):
     return await ChatService.retrieveChatfromSession(user=current_user,sessionid= session_id)

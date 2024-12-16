@@ -9,6 +9,8 @@ import { JournalList } from './components/dailyJournal/JournalList'
 import { AuthConsumer, AuthProvider } from "./context/JWTAuthContext";
 import { Flex, Spinner } from "@chakra-ui/react";
 import { Authenticated } from "./components/auth/Authenticated";
+import { HomeNavBar } from './components/navbar/HomeNavBar';
+import ChatDetail from "./components/chat/ChatDetails";
 
 function App() {
   return (
@@ -22,11 +24,13 @@ function App() {
           </Flex>
         ): (
           <Routes>
-            <Route path="/" element={<PublicRoute><Home/></PublicRoute>} />
+            <Route path="/" element={<PublicRoute><HomeNavBar/><Home/></PublicRoute>} />
             <Route path='/login' element ={<PublicRoute> <Login /> </PublicRoute>} />
             <Route path='/signup' element ={<PublicRoute> <Register /> </PublicRoute>} />
             <Route path='/service'>
-              {/* <Route path="/service/chat" element={<Authenticated><Chat /></Authenticated>} /> */}
+              <Route path="/service/home" element={<Authenticated><Home/></Authenticated>} />
+              <Route path="/service/chat" element={<Authenticated><Chat /></Authenticated>} />
+              <Route path="/service/chat/:sessionId" element={<Authenticated><ChatDetail /></Authenticated>} />
               <Route path='/service/journal' element ={<Authenticated><JournalList/></Authenticated> } />
               <Route path='/service/journal/:JournalId' element ={<Authenticated><JournalDetail/></Authenticated> } />
           </Route>

@@ -1,167 +1,138 @@
-import React, { useState } from 'react';
-import {
-  Box,
-  Flex,
-  Input,
-  Button,
-  Text,
-  VStack,
-  HStack,
-  Divider,
-} from '@chakra-ui/react';
-import { LeftNav } from '../navbar/LeftNav';
-import  ChatSession  from './ChatSessionList'
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axiosInstance from "../../services/axios";
+import { Box, Button, Flex, Input, List, ListItem, Text, Spinner, useToast, Container } from "@chakra-ui/react";
+import { LeftNav } from "../navbar/LeftNav";
+
 const Chat = () => {
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
-  const [selectedSession, setSelectedSession] = useState(null); // Selected chat session
+  const [sessions, setSessions] = useState([]); // State to store chat sessions
+  const [loading, setLoading] = useState(false); // Loading state
+  const [newSessionName, setNewSessionName] = useState(""); // Input state for new session name
+  const navigate = useNavigate();
+  const toast = useToast();
 
-  const handleSendMessage = async () => {
-    if (input.trim() === "") return;
-  
-    const userMessage = { sender: "user", text: input };
-    setMessages((prev) => [...prev, userMessage]);
-  
+  // Fetch chat sessions
+  const fetchSessions = async () => {
+    setLoading(true);
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/v1/chatbot-services/Single-query/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ message: input }),
+      const response = await axiosInstance.get("/chatbot-services/listSession");
+      setSessions(response.data);
+    } catch (error) {
+      toast({
+        title: "Error fetching sessions",
+        description: error.message || "An error occurred",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
       });
-  
-      if (response.ok) {
-        const data = await response.json();
-        const botMessage = { sender: "bot", text: data.content };
-        setMessages((prev) => [...prev, botMessage]);
-      } else {
-        const errorMessage = await response.text();
-        setMessages((prev) => [
-          ...prev,
-          { sender: "bot", text: "Oops! Something went wrong." },
-        ]);
-        console.error("Error:", errorMessage);
-      }
-    } catch (error) {
-      setMessages((prev) => [
-        ...prev,
-        { sender: "bot", text: "Unable to connect to the server." },
-      ]);
-      console.error("Error:", error);
     }
-  
-    setInput("");
-  };
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      handleSendMessage();
-    }
+    setLoading(false);
   };
 
-  const fetchMessagesForSession = async (sessionId) => {
+  // Create new chat session
+  const createSession = async () => {
+    if (!newSessionName) {
+      toast({
+        title: "Session name is required",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/v1/chatbot-services/chat/${sessionId}`);
-      if (response.ok) {
-        const data = await response.json();
-        setMessages(data.messages);
-      } else {
-        console.error("Failed to fetch messages.");
-      }
+      const response = await axiosInstance.post("/chatbot-services/createSession",null, {
+        params: { session_name: newSessionName }, // Pass the message as a query parameter
+      });
+
+      toast({
+        title: "Session created successfully",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+
+      await navigate(`/service/chat/${response.data.session_id}`); // Navigate to the new session
     } catch (error) {
-      console.error("Error fetching messages:", error);
+      toast({
+        title: "Error creating session",
+        description: error.message || "An error occurred",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
-  const handleSessionSelect = (sessionId) => {
-    setSelectedSession(sessionId);
-    fetchMessagesForSession(sessionId);
+  // Navigate to a specific chat session
+  const goToSession = (sessionId) => {
+    navigate(`/service/chat/${sessionId}`);
   };
+
+  // Fetch chat sessions on component mount
+  useEffect(() => {
+    fetchSessions();
+  }, []);
 
   return (
     <Flex h="100vh">
-      {/* Left Navbar */}
       <Box w="15%">
         <LeftNav />
       </Box>
+      <Container mt={9} w="55%">
+          <Box p={4} >
+            
+            <Text fontSize="xl">
+              Chat Sessions
+            </Text>
 
-      {/* Chat Session List */}
-      <Box w="15%" bg="gray.50" p={4} overflowY="auto">
-        <ChatSession onSelectSession={handleSessionSelect} />
-      </Box>
-      
-      {/* Chat Interface */}
-      <Flex w="55%" bg="white" justify="center" align="center">
-      {/* Chat Messages Section */}
-      <Flex
-          direction="column"
-          w="100%"
-          h="100%"
-          bg="green.50"
-          borderRadius="lg"
-          boxShadow="md"
-          overflow="hidden"
-        >
-      <Box
-        flex="1"
-        bg="brand.50"
-        borderRadius="md"
-        boxShadow="md"
-        p={4}
-        overflowY="auto"
-        display="flex"
-        flexDirection="column"
-        gap={4}
-      >
-        <VStack align="stretch" spacing={4}>
-          {messages.map((msg, idx) => (
-            <Flex
-              key={idx}
-              justify={msg.sender === "user" ? "flex-end" : "flex-start"}
-            >
-              <Box
-                bg={msg.sender === "user" ? "brand.500" : "gray.200"}
-                color={msg.sender === "user" ? "white" : "black"}
-                px={4}
-                py={2}
-                borderRadius="lg"
-                maxW="75%"
-                boxShadow="sm"
-              >
-                <Text fontSize='md'>{msg.text}</Text>
-              </Box>
-              
+            {/* Add New Session */}
+            <Flex>
+              <Input
+                placeholder="Enter session name"
+                value={newSessionName}
+                onChange={(e) => setNewSessionName(e.target.value)}
+              />
+              <Button colorScheme="green" onClick={createSession} w='lg'>
+                Create new Session
+              </Button>
             </Flex>
-          ))}
-        </VStack>
-      </Box>
 
-      <Divider my={4} borderColor="brand.300" />
-
-      {/* Message Input Section */}
-      <HStack spacing={4}>
-      <Input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown} // Add this to listen for "Enter" key
-          placeholder="Type your message..."
-          flex="1"
-          bg="white"
-          borderRadius="md"
-          boxShadow="sm"
-        />
-        <Button
-          colorScheme="brand"
-          onClick={handleSendMessage}
-          borderRadius="md"
-          isDisabled={!selectedSession} 
-        >
-          Send
-        </Button>
-      </HStack>
+            {/* Loading Spinner */}
+            {loading ? (
+              <Flex justify="center">
+                <Spinner thickness="4px" speed="0.65s" emptyColor="gray.200" color="brand.400" size="xl" />
+              </Flex>
+            ) : (
+              // List of Sessions
+              <List spacing={3}>
+                {sessions.length > 0 ? (
+                  sessions.map((session) => (
+                    <ListItem
+                      key={session.session_id}
+                      p={3}
+                      boxShadow="md"
+                      borderRadius="md"
+                      _hover={{ bg: "gray.100", cursor: "pointer" }}
+                      onClick={() => goToSession(session.session_id)}
+                    >
+                      <Flex justify="space-between" align="center">
+                        <Text fontWeight="bold">{session.session_name}</Text>
+                        <Text fontSize="sm" color="gray.500">
+                          Created: {new Date(session.create_at).toLocaleString()}
+                        </Text>
+                      </Flex>
+                    </ListItem>
+                  ))
+                ) : (
+                  <Text>No sessions available. Add one to get started!</Text>
+                )}
+              </List>
+            )}
+          </Box>
+        </Container>
       </Flex>
-    </Flex>
-  </Flex>
   );
 };
 

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Box, Button, Flex, Heading, Text, VStack, HStack } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
-import { HomeNavBar } from '../navbar/HomeNavBar';
 
 
 const Home = () => {
@@ -9,7 +8,6 @@ const Home = () => {
 
   return (
     <Box w="100%" h="100vh" bg="brand.50" p={4} >
-      <HomeNavBar/>
       {/* Hero Section */}
       <Flex
         direction="column"

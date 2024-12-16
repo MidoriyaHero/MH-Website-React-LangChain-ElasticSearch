@@ -63,7 +63,7 @@ export const LeftNav = () => {
           justifyContent="flex-start"
           bg="brand.300"
           _hover={{ bg: "brand.500" }}
-          onClick={() => navigate('/home')}
+          onClick={() => navigate('/service/home')}
         >
           Home
         </Button>

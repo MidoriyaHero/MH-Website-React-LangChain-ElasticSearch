@@ -43,7 +43,7 @@ export const CRUDJournal = ({
   }
   return (
     <Box>
-      <Button w='100%' colorScheme="yellow" onClick={onOpen} >
+      <Button w='100%' onClick={onOpen} mt='3'>
         {editable? 'Update' : 'Add' }
       </Button>
       <Modal closeOnOverlayClick={false} size='xl' onClose={onClose} isOpen={isOpen} isCentered >
@@ -112,7 +112,7 @@ export const CRUDJournal = ({
                 <Button onClick={onClose} disabled={isSubmitting} >
                   Close
                 </Button>
-                <Button colorScheme="brand" type='submit' isLoading={isSubmitting} loadingText={editable? 'Updating': 'Creating'} >
+                <Button colorScheme="brand" type='submit' isLoading={isSubmitting} loadingText={editable? 'Updating': 'Creating'}  >
                   {editable? 'Update': 'Create'}
                 </Button>
               </Stack>
