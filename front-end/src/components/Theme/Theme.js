@@ -47,12 +47,19 @@ const Theme = extendTheme({
           },
         },
         calming: {
-          bg: 'complementary.lavender',
+          bg: 'brand.200',
           color: 'black',
           _hover: {
-            bg: 'brand.200',
+            bg: 'complementary.lavender',
           },
         },
+        tindeptrai:{
+          bg: 'complementary.blue',
+          color: 'black',
+          _hover: {
+            bg: 'complementary.lavender',
+          },
+        }
       },
     },
     MenuItem: {

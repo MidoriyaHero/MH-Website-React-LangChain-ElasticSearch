@@ -48,7 +48,7 @@ export const CRUDJournal = ({
       </Button>
       <Modal closeOnOverlayClick={false} size='xl' onClose={onClose} isOpen={isOpen} isCentered >
         <ModalOverlay />
-        <form onSubmit={handleSubmit(onSubmit)} > 
+        <form onSubmit={handleSubmit(onSubmit)} >   
           <ModalContent>
             <ModalHeader>
               {editable? 'Update' : 'Add'}

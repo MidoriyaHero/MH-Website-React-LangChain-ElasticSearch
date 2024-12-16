@@ -83,7 +83,7 @@ const Chat = () => {
       <Container mt={9} w="55%">
           <Box p={4} >
             
-            <Text fontSize="xl">
+            <Text fontWeight="bold" fontSize="xl">
               Chat Sessions
             </Text>
 

@@ -26,7 +26,7 @@ function App() {
           <Routes>
             <Route path="/" element={<PublicRoute><HomeNavBar/><Home/></PublicRoute>} />
             <Route path='/login' element ={<PublicRoute> <Login /> </PublicRoute>} />
-            <Route path='/signup' element ={<PublicRoute> <Register /> </PublicRoute>} />
+            <Route path='/register' element ={<PublicRoute> <Register/> </PublicRoute>} />
             <Route path='/service'>
               <Route path="/service/home" element={<Authenticated><Home/></Authenticated>} />
               <Route path="/service/chat" element={<Authenticated><Chat /></Authenticated>} />

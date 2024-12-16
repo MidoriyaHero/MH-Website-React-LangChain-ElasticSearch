@@ -88,7 +88,7 @@ export const Login = () => {
             </form>
 
             <Button 
-            onClick={()=> navigate('/signup', {replace:true})} 
+            onClick={()=> navigate('/register', {replace:true})} 
             colorScheme='brand' textColor='brand.700' variant='link' mt={3} mb={2}>
                 Or Signup
             </Button>

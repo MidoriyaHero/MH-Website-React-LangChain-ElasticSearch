@@ -23,7 +23,7 @@ export const Register = () => {
     const toast = useToast();
     const onSubmit = async (values) => {
         try {
-          await axiosInstance.post('/users/create', values);
+          await axiosInstance.post('/user/create-users', values);
           toast(
             {title: "Created Successfully!!!",
             status: "success",

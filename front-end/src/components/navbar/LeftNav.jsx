@@ -15,7 +15,7 @@ import { useAuth } from '../../hooks/useAuth';
 
 export const LeftNav = () => {
   const navigate = useNavigate();
-  const {logout} = useAuth();
+  const {logout, user} = useAuth();
   const handleClick = () => {
     logout();
     navigate('/');
@@ -43,11 +43,11 @@ export const LeftNav = () => {
           mb={4}
         >
           <Text fontSize="2xl" fontWeight="bold">
-            U
+            {user ? user.user_name.charAt(0).toUpperCase() : "U"} {/* Display first letter of user_name */}
           </Text>
         </Box>
         <Heading as="h2" size='md' mb={2} color="brand.600">
-          Hello, User!
+          Hello, {user ? user.user_name : "User"}!
         </Heading>
         <Text fontSize='xl' color="gray.600">
           Welcome back!
