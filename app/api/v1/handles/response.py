@@ -27,9 +27,13 @@ async def single_query(query: str):
     except Exception as e:
         raise HTTPException(status_code = 500, detail = e)
 
-@response_router.post('/chat/{sessionid}', response_model = Message)
+@response_router.post('/chat/{sessionid}', response_model=Message)
 async def chat(query: str, session_id: UUID, current_user: User = Depends(get_current_user)):
-    return ChatService.chat(query=query,user = current_user, session_id=session_id)
+    response = await ChatService.chat(query=query, user=current_user, session_id=session_id)
+    return Message(
+        role=response['role'],
+        content=response['content']
+    )
 
 @response_router.post("/createSession")
 async def create_session( session_name: str,current_user: User = Depends(get_current_user)):

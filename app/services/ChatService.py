@@ -12,12 +12,15 @@ from typing import List
 import os
 from uuid import UUID
 
-from app.prompt_template.template import TEMPLATE, standalone_system_prompt
+
 from app.services.VectorStoreService import Vectordb_service
 from app.models.UserModel  import User
 from app.core.config import settings
 from app.schemas.ResponseSchema import Message
 from app.models.HistoryModel import HistoryMessage, Session
+from app.services.Agent import PersonalizedAgent
+from app.services.QuestionnaireService import QuestionnaireService
+from app.services.JournalService import JournalService
 
 
 vectordb = Vectordb_service()
@@ -29,7 +32,13 @@ class ChatService:
     
     @staticmethod
     async def retrieveChatfromSession(sessionid: UUID, user: User) -> list[HistoryMessage]:
-        messages = await HistoryMessage.find(HistoryMessage.SessionId == sessionid).to_list()
+        # First get the session
+        session = await Session.find_one(Session.session_id == sessionid, Session.owner.id == user.id)
+        if not session:
+            return []
+        
+        # Then get messages for that session
+        messages = await HistoryMessage.find(HistoryMessage.session.id == session.id).sort("+create_at").to_list()
         return messages
     
     @staticmethod
@@ -100,58 +109,31 @@ class ChatService:
 
         return chain.invoke({"question": query})
     @staticmethod
-    def chat(user: User, query: str, session_id: UUID):
-        #todo create chat session and store in database
-        session = ChatService.retrieveSession(session_id, user)
-        if session_id:
-            parse_output = StrOutputParser()
-            vectordb = Vectordb_service()
-            retriever = vectordb.as_retriever()
+    async def chat(user: User, query: str, session_id: UUID):
+        session = await ChatService.retrieveSession(sessionid=session_id, user=user)
+        if session:
+            # Initialize LLM and PersonalizedAgent
+            llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, openai_api_key=settings.OPENAI_API_KEY)
+            agent = PersonalizedAgent(llm)
+            
+            # Update agent's context with user's data
+            agent.context_manager.questionnaire_history = await QuestionnaireService.get_user_questionnaire_history(user)
+            agent.context_manager.daily_journals = await JournalService.list_journals(user)
+            agent.context_manager.chat_history = await ChatService.retrieveChatfromSession(sessionid=session_id, user=user)
+            
+            # Get personalized response from agent and format as Message
+            response_text = await agent.run(query)
+            # Store chat in DB
+            await ChatService.createMessage(session, role='user', content=query)
+            await ChatService.createMessage(session, role='system', content=response_text)
+            
+            # Return formatted response
+    
 
-            standalone_question_prompt = ChatPromptTemplate.from_messages(
-                [
-                    ("system", standalone_system_prompt),
-                    MessagesPlaceholder(variable_name="history"),
-                    ("human", "{question}"),
-                ]
-            )
-
-            llm = ChatOpenAI(model="gpt-4o-mini",temperature=0, openai_api_key=settings.OPENAI_API_KEY)
-            question_chain = standalone_question_prompt | llm | parse_output
-            retriever_chain = RunnablePassthrough.assign(context=question_chain | retriever | (lambda docs: "\n\n".join([d.page_content for d in docs])))
-            rag_system_prompt = """Answer the question based only on the following context: \
-            {context}
-            """
-            rag_prompt = ChatPromptTemplate.from_messages(
-                [
-                    ("system", rag_system_prompt),
-                    MessagesPlaceholder(variable_name="history"),
-                    ("human", "{question}"),
-                ]
-            )
-            # RAG chain
-            rag_chain = (
-                retriever_chain
-                | rag_prompt
-                | llm
-                | parse_output
-            )
-
-            # RAG chain with history
-            with_message_history = RunnableWithMessageHistory(
-                rag_chain,
-                ChatService.get_session_history,
-                input_messages_key="question",
-                history_messages_key="history",
-            )
-            response = with_message_history.invoke(
-                                                    {'question': query},
-                                                    {'configurable': {'session_id': str(session_id)}})
-            #add chat to DB
-            ChatService.createMessage(session, role='human', content=query)
-            ChatService.createMessage(session, role='system', content=response)
-            return {'role':'system', 'content': response}
-        
+            return {
+                'role': 'system',
+                'content': response_text
+            }
         else:
-            raise Exception("Something went wrong")
+            raise Exception("Session not found")
         
