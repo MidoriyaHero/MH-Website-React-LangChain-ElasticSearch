@@ -4,6 +4,8 @@ import axiosInstance from "../../services/axios";
 import { Box, Button, Flex, Input, List, ListItem, Text, Spinner, useToast, Container } from "@chakra-ui/react";
 import { LeftNav } from "../navbar/LeftNav";
 
+let exportedSessions = [];
+
 const Chat = () => {
   const [sessions, setSessions] = useState([]); // State to store chat sessions
   const [loading, setLoading] = useState(false); // Loading state
@@ -17,6 +19,8 @@ const Chat = () => {
     try {
       const response = await axiosInstance.get("/chatbot-services/listSession");
       setSessions(response.data);
+      exportedSessions = response.data;
+
     } catch (error) {
       toast({
         title: "Error fetching sessions",
@@ -135,5 +139,5 @@ const Chat = () => {
       </Flex>
   );
 };
-
+export const getExportedSessions = () => exportedSessions;
 export default Chat;

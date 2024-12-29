@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "../../services/axios";
-import { Box, Button, Flex, Input, Spinner, Text, VStack, HStack, useToast } from "@chakra-ui/react";
+import { Box, Button, Flex, Input, Spinner, Text, VStack, HStack, useToast} from "@chakra-ui/react";
 import { renderMarkdownResponse } from '../../utils/markdown';
+
 
 const ChatDetail = () => {
   const { sessionId } = useParams(); // Get sessionId from URL params
@@ -82,14 +83,18 @@ const ChatDetail = () => {
   }, [sessionId]);
 
   return (
-    <Box p={4} height="100vh" display="flex" flexDirection="column">
+    <Flex height="100vh" w='100%'> 
+    <Box w='30%'>
+
+    </Box>
+    <Box p={4} height="100vh" w='55%' display="flex" flexDirection="column" >
       {/* Header */}
       <Flex align="center" mb={4}>
         <Button colorScheme="teal" size="sm" onClick={() => navigate("/service/chat")}>
           Back
         </Button>
         <Text fontSize="2xl" fontWeight="bold" ml={4}>
-          Chat Session: {sessionId}
+          SuperChat
         </Text>
         <Button
           size="sm"
@@ -156,6 +161,7 @@ const ChatDetail = () => {
         </Button>
       </HStack>
     </Box>
+    </Flex>
   );
 };
 
