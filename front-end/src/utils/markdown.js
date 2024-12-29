@@ -17,8 +17,7 @@ export const renderMarkdownResponse = (markdownText) => {
     <div
       dangerouslySetInnerHTML={{ __html: htmlContent }}
       style={{
-        padding: '16px',
-        backgroundColor: '#f9f9f9',
+        padding: '10px',
         borderRadius: '8px',
         fontFamily: 'Arial, sans-serif',
         lineHeight: '1.6',

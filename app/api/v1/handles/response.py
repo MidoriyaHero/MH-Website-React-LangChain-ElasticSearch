@@ -27,7 +27,7 @@ async def single_query(query: str):
     except Exception as e:
         raise HTTPException(status_code = 500, detail = e)
 
-@response_router.post('/chat/{sessionid}', response_model=Message)
+@response_router.post('/chat/', response_model=Message)
 async def chat(query: str, session_id: UUID, current_user: User = Depends(get_current_user)):
     response = await ChatService.chat(query=query, user=current_user, session_id=session_id)
     return Message(
@@ -50,7 +50,7 @@ async def get_session(session_id: UUID, current_user: User = Depends(get_current
 async def rename_session(session_id: UUID, name: str, current_user: User = Depends(get_current_user)):
     return await ChatService.updateSessionName(user=current_user, sessionid=session_id, name=name)
 
-@response_router.delete('/deleteSession/{sesion_id}')
+@response_router.delete('/deleteSession/')
 async def delete_session(session_id: UUID, current_user: User = Depends(get_current_user)):
     await ChatService.deleteSession(user=current_user,sessionid= session_id)
     return {'Messages':'Deleted session'}

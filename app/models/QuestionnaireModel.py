@@ -12,7 +12,7 @@ class QuestionnaireResponse(Document):
     responses: List[int]  # Individual question scores
     total_score: int
     severity: str  # Interpretation of the score
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    timestamp: datetime = Field(default_factory=datetime.now)
     owner: Link[User]
 
     class Settings:

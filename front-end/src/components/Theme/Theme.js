@@ -3,37 +3,41 @@ import { extendTheme } from '@chakra-ui/react';
 const Theme = extendTheme({
   colors: {
     brand: {
-      50: '#f2f9e9', // Lightest
-      100: '#dff0c2',
-      200: '#cae79b',
-      300: '#b6dd74',
-      400: '#a1dc6e', // Main Brand Color
-      500: '#88bf5c',
-      600: '#6c9a47',
-      700: '#507531',
-      800: '#344f1b',
-      900: '#1a2a0d', // Darkest
+      50: '#f0f4f8', // Lighter shades for a fresher look
+      100: '#d9e2ec',
+      200: '#bfd1e5',
+      300: '#a6c0dc',
+      400: '#8da9d3', // Slightly muted for modern appeal
+      500: '#7392c0',
+      600: '#5c78a3',
+      700: '#435a85',
+      800: '#2e3c68',
+      900: '#1b214b',
     },
     complementary: {
-      red: '#FF0000',
-      yellow: '#FFF8D6', // Optimistic yellow
-      pink: '#FADCD9',   // Soft peach/pink for calm
-      blue: '#B3E5FC',   // Soothing blue for trust
-      lavender: '#E6E6FA', // Relaxing lavender
-      mint: '#D4F4DD',    // Fresh, clean mint
-      coral: '#FFA07A',   // Vibrant coral for accents
+      red: '#FF6B6B',
+      yellow: '#FFE66D',
+      pink: '#FF9AA2',
+      blue: '#4ECDC4',
+      lavender: '#C06C84',
+      mint: '#355C7D',
+      coral: '#FF847C',
     },
+  },
+  fonts: {
+    heading: "Poppins, sans-serif",
+    body: "Roboto, sans-serif",
   },
   components: {
     Button: {
       baseStyle: {
         _focus: {
-          boxShadow: 'none',
+          boxShadow: 'outline',
         },
       },
       variants: {
         solid: {
-          bg: 'brand.400', // Default background color for buttons
+          bg: 'brand.400',
           color: 'white',
           _hover: {
             bg: 'brand.500',
@@ -53,21 +57,39 @@ const Theme = extendTheme({
             bg: 'complementary.lavender',
           },
         },
-        tindeptrai:{
+        tindeptrai: {
           bg: 'complementary.blue',
           color: 'black',
           _hover: {
             bg: 'complementary.lavender',
           },
-        }
+        },
       },
     },
-    MenuItem: {
-      baseStyle: {
-        color: 'brand.400',
-        _hover: {
-          bg: 'complementary.yellow',
+    Input: {
+      variants: {
+        filled: {
+          field: {
+            bg: 'brand.50',
+            _hover: {
+              bg: 'brand.100',
+            },
+            _focus: {
+              bg: 'white',
+              borderColor: 'brand.400',
+            },
+          },
         },
+      },
+    },
+    Text: {
+      baseStyle: {
+        color: 'gray.700',
+      },
+    },
+    Heading: {
+      baseStyle: {
+        color: 'brand.700',
       },
     },
   },

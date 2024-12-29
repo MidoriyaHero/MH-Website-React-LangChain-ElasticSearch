@@ -2,12 +2,11 @@ import React from 'react';
 import { Box, Button, Flex, Heading, Text, VStack, HStack } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 
-
 const Home = () => {
   const navigate = useNavigate();
 
   return (
-    <Box w="100%" h="100vh" bg="brand.50" p={4} >
+    <Box w="100%" minH="100vh" bg="brand.50" p={4}>
       {/* Hero Section */}
       <Flex
         direction="column"
@@ -19,80 +18,82 @@ const Home = () => {
         shadow="lg"
         textAlign="center"
         mb={10}
+        maxW="800px"
+        mx="auto"
       >
-        <Heading size="xl" mb={4} color='brand.400' >
+        <Heading size="2xl" mb={4} color='brand.600'>
           Chat Seamlessly, Reflect Deeply
         </Heading>
         <Text fontSize="lg" color='brand.700' mb={6}>
           Engage in intelligent conversations and keep track of your thoughts with our journaling feature.
         </Text>
-        <HStack spacing={4}>
-          <Button colorScheme="brand" onClick={() => navigate('/service/chat')}>
+        <HStack spacing={6}>
+          <Button colorScheme="brand" size="lg" onClick={() => navigate('/service/chat')}>
             Start Chatting
           </Button>
-          <Button variant="outline" colorScheme="brand" onClick={() => navigate('/service/journal')}>
+          <Button variant="outline" colorScheme="brand" size="lg" onClick={() => navigate('/service/journal')}>
             Write a Journal
           </Button>
         </HStack>
       </Flex>
 
       {/* Features Section */}
-      <VStack spacing={6} mb={10}>
+      <VStack spacing={6} mb={10} maxW="1200px" mx="auto">
         <Flex
-          direction="column"
+          direction={{ base: "column", md: "row" }}
           align="center"
           bg="brand.100"
           p={6}
           rounded="md"
           shadow="sm"
           w="100%"
-          maxW="400px"
+          justify="space-around"
         >
-          <Heading size="md" mb={2}>
+          <Heading size="md" mb={{ base: 2, md: 0 }}>
             Smart Chat
           </Heading>
-          <Text fontSize="sm" color="brand.700" align="center">
-            AI-powered chat for instant assistance and conversations.
+          <Text fontSize="md" color="brand.700" align="center" maxW="400px">
+            AI-powered chat for instant assistance and engaging conversations.
           </Text>
         </Flex>
         <Flex
-          direction="column"
+          direction={{ base: "column", md: "row" }}
           align="center"
           bg="brand.100"
           p={6}
           rounded="md"
           shadow="sm"
           w="100%"
-          maxW="400px"
+          justify="space-around"
         >
-          <Heading size="md" mb={2}>
+          <Heading size="md" mb={{ base: 2, md: 0 }}>
             Daily Journal
           </Heading>
-          <Text fontSize="sm" color="brand.700" align="center">
-            Record and organize your daily thoughts.
+          <Text fontSize="md" color="brand.700" align="center" maxW="400px">
+            Record and organize your daily thoughts with ease.
           </Text>
         </Flex>
         <Flex
-          direction="column"
+          direction={{ base: "column", md: "row" }}
           align="center"
           bg="brand.100"
           p={6}
           rounded="md"
           shadow="sm"
           w="100%"
-          maxW="400px"
+          justify="space-around"
         >
-          <Heading size="md" mb={2}>
+          <Heading size="md" mb={{ base: 2, md: 0 }}>
             Personalized Insights
           </Heading>
-          <Text fontSize="sm" color="brand.700" align="center">
+          <Text fontSize="md" color="brand.700" align="center" maxW="400px">
             Get tailored suggestions and summaries for better self-reflection.
           </Text>
         </Flex>
       </VStack>
 
       {/* Footer Section */}
-      <Flex justify="space-between" bg="brand.200" p={4} rounded="md" shadow="sm">
+      <Flex justify="center" bg="brand.200" p={4} rounded="md" shadow="sm" maxW="1200px" mx="auto">
         <Text>© 2024 BME LAB 513</Text>
       </Flex>
     </Box>

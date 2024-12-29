@@ -7,6 +7,7 @@ import {
 import {
     FormControl, 
     FormErrorMessage,
+    FormLabel,
 } from '@chakra-ui/form-control';
 import {useForm} from 'react-hook-form'
 import { useNavigate } from "react-router";
@@ -17,7 +18,7 @@ export const Login = () => {
     const {
         handleSubmit,
         register,
-        formState: {errors, isSubmitting,},
+        formState: {errors, isSubmitting},
     }  = useForm();
 
     const navigate = useNavigate();
@@ -25,7 +26,13 @@ export const Login = () => {
     const toast = useToast();
     const onSubmit = async (values) => {
         try {
-            await login(values.email, values.password )
+            await login(values.email, values.password)
+            toast({
+                title: 'Login Successful',
+                status: 'success',
+                isClosable: true,
+                duration: 2000,
+            })
         } catch (err) {
             toast({
                 title: 'Invalid Email or Password',
@@ -35,24 +42,28 @@ export const Login = () => {
             })
         }
     }
-    return <Flex height='100vh' align ='center' justifyContent='center'>
+    return <Flex height='100vh' align ='center' justifyContent='center' bg="brand.50">
         <Flex 
         direction='column' 
         alignItems ='center' 
-        background={('brand.200')}
+        background='white'
         p={12}
-        rounded={6}>
-            <Heading textColor='brand' mb={6}>Login</Heading>
-            <form onSubmit={handleSubmit(onSubmit)}>
-                <FormControl isInvalid={errors.email}>
+        rounded='lg'
+        shadow='lg'
+        width={{base: '90%', md: '400px'}}>
+            <Heading textColor='brand.700' mb={6}>Login</Heading>
+            <form onSubmit={handleSubmit(onSubmit)} style={{width: '100%'}}>
+                <FormControl isInvalid={errors.email} mb={4}>
+                    <FormLabel>Email</FormLabel>
                     <Input
-                    placeholder='Email'
-                    background={('brand.100')}
+                    placeholder='Enter your email'
                     type='email'
-                    size='lg'
-                    mt={6}
-                    {...register('email',{
-                        required: "This is required field!!!"
+                    {...register('email', {
+                        required: "Email is required",
+                        pattern: {
+                            value: /^\S+@\S+$/i,
+                            message: "Invalid email address",
+                        },
                     })}
                     />
                     <FormErrorMessage>
@@ -60,15 +71,17 @@ export const Login = () => {
                     </FormErrorMessage>
                 </FormControl>
                 
-                <FormControl isInvalid={errors.email}>
+                <FormControl isInvalid={errors.password} mb={6}>
+                    <FormLabel>Password</FormLabel>
                     <Input
-                    placeholder='Password'
-                    background={('brand.100')}
+                    placeholder='Enter your password'
                     type='password'
-                    size='lg'
-                    mt={6}
-                    {...register('password',{
-                        required: "This is required field!!!"
+                    {...register('password', {
+                        required: "Password is required",
+                        minLength: {
+                            value: 5,
+                            message: "Password must be at least 5 characters",
+                        },
                     })}
                     />
                     <FormErrorMessage>
@@ -78,24 +91,24 @@ export const Login = () => {
 
                 <Button 
                 width='100%'
+                type='submit'
+                colorScheme="brand"
                 isLoading={isSubmitting}
-                bg="brand.300"
-                _hover={{ bg: "brand.500" }}
-                mt={3} mb ={0}
-                type = 'submit'>
+                mb={4}>
                     Login
                 </Button>
             </form>
 
             <Button 
             onClick={()=> navigate('/register', {replace:true})} 
-            colorScheme='brand' textColor='brand.700' variant='link' mt={3} mb={2}>
+            colorScheme='brand' variant='link' mb={2}>
                 Or Signup
             </Button>
             <Button
           leftIcon={<FiHome />}
           justifyContent='flex-end'
-          bg="brand.300"
+          bg="brand.400"
+          color="white"
           _hover={{ bg: "brand.500" }}
           onClick={() => navigate('/')}
         >Back to Home</Button>

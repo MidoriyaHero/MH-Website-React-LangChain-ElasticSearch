@@ -6,6 +6,7 @@ class ContextManager:
         self.questionnaire_history = []
         self.chat_history = []
         self.daily_journals = []
+
     
     def get_latest_context(self) -> Dict:
         latest_questionnaire = self._get_latest_questionnaire()
@@ -13,6 +14,9 @@ class ContextManager:
         
         # Check if context is from today
         today = datetime.now().date()
+        print(today)
+        print(latest_questionnaire.timestamp.date())
+        print(latest_journal.update_at.date())
         context = {
             "latest_questionnaire": {
                 "data": latest_questionnaire,

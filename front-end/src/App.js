@@ -11,6 +11,7 @@ import { Flex, Spinner } from "@chakra-ui/react";
 import { Authenticated } from "./components/auth/Authenticated";
 import { HomeNavBar } from './components/navbar/HomeNavBar';
 import ChatDetail from "./components/chat/ChatDetails";
+import Questionnaire from './components/questionnaire/Questionnaire';
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
               <Route path="/service/chat/:sessionId" element={<Authenticated><ChatDetail /></Authenticated>} />
               <Route path='/service/journal' element ={<Authenticated><JournalList/></Authenticated> } />
               <Route path='/service/journal/:JournalId' element ={<Authenticated><JournalDetail/></Authenticated> } />
+              <Route path="/service/questionnaire" element={<Authenticated><Questionnaire /></Authenticated>} />
           </Route>
             <Route path='*' element ={<Navigate to ='/' />} />
         </Routes>
