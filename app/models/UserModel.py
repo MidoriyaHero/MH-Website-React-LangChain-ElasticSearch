@@ -8,7 +8,7 @@ from typing import Optional
 
 class User(Document):
     user_id: UUID = Field(default_factory = uuid4)
-    user_name: Indexed(str, unique = True)
+    user_name: str
     email: Indexed(EmailStr, unique = True)
     hash_password: str
     first_name: Optional[str] = None

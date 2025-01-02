@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-d
 import Chat from './components/chat/chat';
 import Home from "./components/home/Home";
 import { Login} from "./components/auth/login";
-import { Register} from "./components/auth/register";
+import { Register} from "./components/auth/Register";
 import { PublicRoute} from './components/auth/PublicRoute';
 import { JournalDetail } from './components/dailyJournal/JournalDetail'
 import { JournalList } from './components/dailyJournal/JournalList'
@@ -32,8 +32,7 @@ function App() {
               <Route path="/service/home" element={<Authenticated><Home/></Authenticated>} />
               <Route path="/service/chat" element={<Authenticated><Chat /></Authenticated>} />
               <Route path="/service/chat/:sessionId" element={<Authenticated><ChatDetail /></Authenticated>} />
-              <Route path='/service/journal' element ={<Authenticated><JournalList/></Authenticated> } />
-              <Route path='/service/journal/:JournalId' element ={<Authenticated><JournalDetail/></Authenticated> } />
+              <Route path='/service/journal' element={<Authenticated><JournalList/></Authenticated>} />
               <Route path="/service/questionnaire" element={<Authenticated><Questionnaire /></Authenticated>} />
           </Route>
             <Route path='*' element ={<Navigate to ='/' />} />

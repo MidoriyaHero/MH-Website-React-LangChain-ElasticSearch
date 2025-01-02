@@ -1,31 +1,13 @@
 from fastapi import APIRouter, HTTPException, Depends
-from typing import List
-from langchain_core.documents import Document
 from uuid import UUID
 
 from app.models.UserModel import User
 from app.api.v1.dependency.UserDependency import get_current_user
-
 from app.services.ChatService import ChatService
 from app.schemas.ResponseSchema import Message
 
-
 response_router = APIRouter()
 
-def format_docs(docs: List[Document]):
-        return [doc.page_content for doc in docs]
-@response_router.post("/Single-query/", response_model= Message)
-async def single_query(query: str):
-    try:
-        response = ChatService.response(query)
-        format_doc = format_docs(response['context'])
-        dict_response = {
-            'role': 'system',
-            'content': response['answer']
-        }
-        return dict_response
-    except Exception as e:
-        raise HTTPException(status_code = 500, detail = e)
 
 @response_router.post('/chat/', response_model=Message)
 async def chat(query: str, session_id: UUID, current_user: User = Depends(get_current_user)):

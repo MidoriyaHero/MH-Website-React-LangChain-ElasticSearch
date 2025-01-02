@@ -12,7 +12,7 @@ export const HomeNavBar = () => {
         <Button leftIcon={<FiLogIn />} variant='ghost' colorScheme="White" onClick={() => navigate('/login')}>
             Login
         </Button>
-        <Button colorScheme="brand" onClick={() => navigate('/signup')}>
+        <Button colorScheme="brand" onClick={() => navigate('/register')}>
             Sign up 
         </Button>
     </HStack>

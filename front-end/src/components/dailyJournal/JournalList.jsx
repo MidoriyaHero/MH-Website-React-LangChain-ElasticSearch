@@ -1,14 +1,17 @@
-import { Box, Center, Container, Flex, Spinner } from '@chakra-ui/react'
+import { Box, Center, Container, Flex, Spinner, Text } from '@chakra-ui/react'
 import React, { useEffect, useRef, useState } from 'react'
 import axiosInstance from '../../services/axios';
 import { JournalCard } from './JournalCard';
 import { CRUDJournal } from './CRUDJournal';
 import { LeftNav } from '../navbar/LeftNav';
+import { JournalDetail } from './JournalDetail';
 
 export const JournalList = () => {
-    const [Journals, setJournals] = useState([]);
+    const [journals, setJournals] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [selectedJournalId, setSelectedJournalId] = useState(null);
     const isMounted = useRef(false);
+
     useEffect(() => {
         if (isMounted.current) return;
         fetchJournal();
@@ -26,27 +29,48 @@ export const JournalList = () => {
             setLoading(false)
         })
     }
+
+    const handleJournalSelect = (journalId) => {
+        setSelectedJournalId(journalId);
+    }
+
     return (
-    <Flex h="100vh">
-        <Box w="15%">
-        <LeftNav />
-      </Box>
-    
-    <Container mt={9} w="55%" bg="white" justify="center" align="center">
-        <CRUDJournal onSuccess={fetchJournal} />
-        {loading ? (
-            <Center mt={6} >
-                <Spinner thickness='4px' speed='0.5s' emptyColor='green.100' color="green.100" />
-            </Center>
-        ):(
-            <Box mt={6}>
-                {Journals?.map((Journal) =>(
-                    <JournalCard Journal = {Journal} key = {Journal.id}/>
-                ))}
+        <Flex h="100vh">
+            <Box w="15%">
+                <LeftNav />
             </Box>
-        )}
-        
-    </Container>
-    </Flex>
+            
+            {/* Journal List Section */}
+            <Container mt={9} w="40%" bg="white" justify="center" align="center">
+                <CRUDJournal onSuccess={fetchJournal} />
+                {loading ? (
+                    <Center mt={6}>
+                        <Spinner thickness='4px' speed='0.5s' emptyColor='green.100' color="green.100" />
+                    </Center>
+                ):(
+                    <Box mt={6}>
+                        {journals?.map((journal) =>(
+                            <JournalCard 
+                                journal={journal} 
+                                key={journal.journal_id}
+                                isSelected={selectedJournalId === journal.journal_id}
+                                onSelect={handleJournalSelect}
+                            />
+                        ))}
+                    </Box>
+                )}
+            </Container>
+
+            {/* Journal Detail Section */}
+            <Box w="45%" mt={9} pr={4}>
+                {selectedJournalId ? (
+                    <JournalDetail journalId={selectedJournalId} onUpdate={fetchJournal} />
+                ) : (
+                    <Center h="100%" bg="brand.50" rounded="lg">
+                        <Text color="gray.500">Select a journal to view details</Text>
+                    </Center>
+                )}
+            </Box>
+        </Flex>
     )
 }

@@ -18,7 +18,7 @@ const Home = () => {
         shadow="lg"
         textAlign="center"
         mb={10}
-        maxW="800px"
+        maxW="80%" 
         mx="auto"
       >
         <Heading size="2xl" mb={4} color='brand.600'>

@@ -23,7 +23,7 @@ export const Register = () => {
     const toast = useToast();
     const onSubmit = async (values) => {
         try {
-          await axiosInstance.post('/user/create-users', values);
+          const response = await axiosInstance.post('/user/create-users', values);
           toast(
             {title: "Created Successfully!!!",
             status: "success",
@@ -32,8 +32,9 @@ export const Register = () => {
           });
           navigate('/login', {replace: true});
         } catch (err) {
+          console.error('Registration error:', err);
           toast({
-            title: `${err.response.data.detail}`,
+            title: `${err.response?.data?.detail || 'Registration failed'}`,
             status: 'error',
             isClosable:true,
             duration: 1500
@@ -114,13 +115,14 @@ export const Register = () => {
               </FormErrorMessage>
             </FormControl>
             <Button
+              type="submit"
               isLoading={isSubmitting}
               loadingText="Creating account..."
               width="100%"
               bg="brand.300"
               _hover={{ bg: "brand.500" }} mt={3} mb={2}
             >
-              Signup
+              Register
             </Button>
           </form>
           <Button
