@@ -6,14 +6,26 @@ import {
   Button,
   Flex,
   Input,
-  Spinner,
   Text,
   VStack,
   HStack,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  FormControl,
+  FormLabel,
 } from "@chakra-ui/react";
 import { renderMarkdownResponse } from '../../utils/markdown';
-import { FiPlus, FiRefreshCw, FiTrash } from 'react-icons/fi';
+import { FiPlus, FiRefreshCw, FiTrash, FiArrowLeft, FiBook, FiClipboard } from 'react-icons/fi';
 import { useToast } from '@chakra-ui/react';
+import { motion } from "framer-motion";
+import { BsFillEmojiSmileFill, BsSend, BsImageFill } from "react-icons/bs";
+import { MdDarkMode, MdLightMode } from "react-icons/md";
+import { LeftNav } from '../navbar/LeftNav';
 
 const ChatDetail = () => {
   const { sessionId } = useParams();
@@ -25,6 +37,29 @@ const ChatDetail = () => {
   const navigate = useNavigate();
   const messagesEndRef = useRef(null);
   const toast = useToast();
+  const [theme, setTheme] = useState('light');
+  const [showEmojis, setShowEmojis] = useState(false);
+  const [isNewSessionModalOpen, setIsNewSessionModalOpen] = useState(false);
+  const [newSessionName, setNewSessionName] = useState("");
+
+  // Add new message container styles
+  const messageContainerStyle = {
+    background: theme === 'light' ? 'white' : 'gray.800',
+    borderRadius: '20px',
+    boxShadow: 'lg',
+    p: 6,
+    mb: 4,
+    height: 'calc(100vh - 180px)',
+    overflowY: 'auto',
+    scrollBehavior: 'smooth'
+  };
+
+  // Message bubble animations
+  const messageAnimation = {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.3 }
+  };
 
   useEffect(() => {
     fetchMessages();
@@ -100,8 +135,51 @@ const ChatDetail = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleCreateNewSession = () => {
-    navigate('/service/chat');
+  const handleNewSessionClick = () => {
+    setIsNewSessionModalOpen(true);
+  };
+
+  const handleCreateNewSession = async () => {
+    if (!newSessionName.trim()) {
+      toast({
+        title: "Session name is required",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    try {
+      const response = await axiosInstance.post("/chatbot-services/createSession", null, {
+        params: { session_name: newSessionName },
+      });
+      
+      // Reset the form and close modal
+      setNewSessionName("");
+      setIsNewSessionModalOpen(false);
+      
+      // Fetch updated session list
+      fetchSessions();
+      
+      // Navigate to the new session
+      navigate(`/service/chat/${response.data.session_id}`);
+      
+      toast({
+        title: "New session created",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+    } catch (error) {
+      toast({
+        title: "Error creating session",
+        description: error.message || "An error occurred",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
   };
 
   const handleRefreshSessions = () => {
@@ -139,17 +217,28 @@ const ChatDetail = () => {
 
   return (
     <Flex height="100vh">
-      {/* Sidebar */}
-      <Box w={{ base: "100%", md: "25%" }} bg="gray.100" p={4} overflowY="auto">
+      {/* Left Navigation */}
+      <Box w="15%">
+        <LeftNav />
+      </Box>
+
+      {/* Sessions Sidebar - updated width */}
+      <Box
+        w="20%"
+        bg={theme === 'light' ? 'white' : 'gray.800'}
+        borderRight="1px"
+        borderColor={theme === 'light' ? 'gray.200' : 'gray.600'}
+        p={4}
+      >
         <Flex justify="space-between" align="center" mb={4}>
           <Text fontSize="lg" fontWeight="bold">Sessions</Text>
-          <HStack spacing={2}>
+          <HStack spacing={2} >
             <Button
               size="sm"
               leftIcon={<FiPlus />}
               colorScheme="green"
               variant="outline"
-              onClick={handleCreateNewSession}
+              onClick={handleNewSessionClick}
             >
               New
             </Button>
@@ -193,57 +282,152 @@ const ChatDetail = () => {
         </VStack>
       </Box>
 
-      {/* Main Chat Area */}
-      <Box p={4} height="100vh" w={{ base: "100%", md: "75%" }} display="flex" flexDirection="column">
-        <Flex align="center" mb={4}>
-          <Button colorScheme="teal" size="sm" onClick={() => navigate("/service/chat")}>
-            Back
-          </Button>
-          <Text fontSize="2xl" fontWeight="bold" ml={4}>
-            SuperChat
-          </Text>
+      {/* Main Chat Area - updated width */}
+      <Box w="65%" position="relative" height="100vh" overflow="hidden">
+        {/* Header with back button and service navigation */}
+        <Flex justify="space-between" align="center" mb={6}>
+          <Flex align="center">
+            <Button
+              leftIcon={<FiArrowLeft />}
+              variant="ghost"
+              onClick={() => navigate('/service/chat')}
+              mr={4}
+              color={theme === 'light' ? 'gray.800' : 'white'}
+            >
+              Back
+            </Button>
+            <Text fontSize="2xl" fontWeight="bold" 
+                  color={theme === 'light' ? 'gray.800' : 'white'}>
+              SuperChat
+            </Text>
+          </Flex>
+          <HStack spacing={4}>
+            <Button
+              leftIcon={<FiBook />}
+              variant="ghost"
+              onClick={() => navigate('/service/journal')}
+              color={theme === 'light' ? 'gray.800' : 'white'}
+            >
+              Journal
+            </Button>
+            <Button
+              leftIcon={<FiClipboard />}
+              variant="ghost"
+              onClick={() => navigate('/service/questionnaire')}
+              color={theme === 'light' ? 'gray.800' : 'white'}
+            >
+              Questionnaire
+            </Button>
+            <Button
+              onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+              variant="ghost"
+              size="lg"
+            >
+              {theme === 'light' ? <MdDarkMode /> : <MdLightMode />}
+            </Button>
+          </HStack>
         </Flex>
-        <Box flex="1" overflowY="auto" borderWidth="1px" borderRadius="lg" p={4} mb={4}>
-          {loading ? (
-            <Flex justify="center" align="center" height="100%">
-              <Spinner size="xl" color="brand.400" />
-            </Flex>
-          ) : (
-            <VStack spacing={3} align="stretch">
-              {messages.map((msg, index) => (
+
+        {/* Messages Container */}
+        <Box {...messageContainerStyle}>
+          {messages.map((msg, index) => (
+            <motion.div
+              key={msg.id || index}
+              {...messageAnimation}
+            >
+              <Flex
+                justify={msg.role === "user" ? "flex-end" : "flex-start"}
+                mb={4}
+              >
                 <Box
-                  key={msg.id || index}
-                  alignSelf={msg.role === "user" ? "flex-end" : "flex-start"}
-                  bg={msg.role === "user" ? "teal.200" : "blue.100"}
-                  
-                  px={4}
-                  py={2}
-                  borderRadius="md"
-                  boxShadow="md"
-                  maxWidth="80%"
+                  maxW="70%"
+                  bg={msg.role === "user" ? "brand.500" : "gray.100"}
+                  color={msg.role === "user" ? "white" : "gray.800"}
+                  p={4}
+                  borderRadius="20px"
+                  borderTopRightRadius={msg.role === "user" ? "0" : "20px"}
+                  borderTopLeftRadius={msg.role === "user" ? "20px" : "0"}
                 >
-                  <Text fontWeight="bold">{msg.role === "user" ? "Tôi" : "Trợ thủ tinh thần"}</Text>
-                  <Text>{renderMarkdownResponse(msg.content)}</Text>
+                  {renderMarkdownResponse(msg.content)}
                 </Box>
-              ))}
-              <div ref={messagesEndRef} />
-            </VStack>
-          )}
+              </Flex>
+            </motion.div>
+          ))}
+          <div ref={messagesEndRef} />
         </Box>
-        <HStack spacing={2}>
+
+        {/* Input Area - Fixed at bottom */}
+        <Flex
+          position="fixed"
+          bottom={6}
+          left="35%"
+          right={6}
+          p={4}
+          bg={theme === 'light' ? 'white' : 'gray.800'}
+          borderRadius="full"
+          boxShadow="lg"
+          zIndex={2}
+        >
+          <Button
+            variant="ghost"
+            onClick={() => setShowEmojis(!showEmojis)}
+            mr={2}
+          >
+            <BsFillEmojiSmileFill />
+          </Button>
+          <Button variant="ghost" mr={2}>
+            <BsImageFill />
+          </Button>
           <Input
-            placeholder="Type your message here..."
+            flex="1"
+            variant="unstyled"
+            placeholder="Type your message..."
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-            isDisabled={sending}
-            bg="white"
           />
-          <Button colorScheme="blue" onClick={sendMessage} isLoading={sending}>
-            Send
+          <Button
+            colorScheme="brand"
+            borderRadius="full"
+            onClick={sendMessage}
+            isLoading={sending}
+          >
+            <BsSend />
           </Button>
-        </HStack>
+        </Flex>
       </Box>
+
+      {/* Add the Modal */}
+      <Modal isOpen={isNewSessionModalOpen} onClose={() => setIsNewSessionModalOpen(false)}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Create New Session</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <FormControl>
+              <FormLabel>Session Name</FormLabel>
+              <Input
+                value={newSessionName}
+                onChange={(e) => setNewSessionName(e.target.value)}
+                placeholder="Enter session name"
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    handleCreateNewSession();
+                  }
+                }}
+              />
+            </FormControl>
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="ghost" mr={3} onClick={() => setIsNewSessionModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button colorScheme="brand" onClick={handleCreateNewSession}>
+              Create
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Flex>
   );
 };

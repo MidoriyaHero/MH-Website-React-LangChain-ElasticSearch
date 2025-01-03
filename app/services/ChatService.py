@@ -84,7 +84,7 @@ class ChatService:
             
         # Initialize agent with user context
         llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
-        agent = PersonalizedChatAgent(llm)
+        agent = PersonalizedChatAgent(llm,user)
         
         # Get user context
         questionnaire_history = await QuestionnaireService.get_user_questionnaire_history(user)

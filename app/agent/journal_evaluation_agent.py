@@ -44,6 +44,13 @@ class JournalEvaluationAgent:
                 "emotions": ["bình thản", "điềm đạm"],
                 "themes": ["công việc thường ngày", "sinh hoạt hàng ngày"]
             }}
+            Ví dụ 4:
+            Input: ""
+            Output: {{
+                "sentiment": "TRUNG TÍNH",
+                "emotions": [],
+                "themes": []
+            }}
             """),
             ("user", "{input}")
         ])

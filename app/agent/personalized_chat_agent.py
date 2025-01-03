@@ -31,12 +31,17 @@ class ContextManager:
         return (datetime.now() - latest_gad7.timestamp).days >= 7
 
 class PersonalizedChatAgent:
-    def __init__(self, llm):
+    def __init__(self, llm, user):
         self.llm = llm
+        self.user = user
         self.context_manager = ContextManager()
         
         self.chat_prompt = ChatPromptTemplate.from_messages([
-            ("system", """Bạn là một trợ lý AI thấu cảm và hỗ trợ. Hãy sử dụng các thông tin sau để đưa ra câu trả lời phù hợp:
+            ("system", """Bạn là một trợ lý AI thấu cảm và hỗ trợ sức khỏe tinh thần. 
+             hôm nay là ngày {today}
+
+Thông tin người dùng:
+Tên: {user_name}
 
 Trạng thái cảm xúc gần đây của người dùng:
 {emotional_context}
@@ -48,6 +53,9 @@ Nội dung cuộc trò chuyện trước đó:
 {chat_history}
 
 Hướng dẫn:
+- Gọi người dùng bằng tên của họ khi phù hợp
+- Đưa ra lời khuyên và hướng dẫn phù hợp với trạng thái cảm xúc của người dùng dựa vào Cảm xúc từ nhật ký và điểm đánh giá lo âu
+- Luôn tôn trọng và đối xử với người dùng như một người bạn thân
 - Luôn trả lời bằng tiếng Việt
 - Thể hiện sự đồng cảm và hỗ trợ
 - Tham khảo thông tin liên quan từ nhật ký của họ khi phù hợp
@@ -78,7 +86,7 @@ Hướng dẫn:
                 context.append(f"- {journal.create_at.date()}: {journal.sentiment_analysis}")
                 if journal.emotions:
                     context.append(f"  Cảm xúc: {', '.join(journal.emotions)}")
-        
+        print(context)
         return "\n".join(context)
     
     def _build_recommendations(self) -> str:
@@ -89,13 +97,18 @@ Hướng dẫn:
             
         if self.context_manager.should_recommend_gad7():
             recommendations.append("Đề xuất làm bảng câu hỏi đánh giá lo âu")
-            
+        print(recommendations)
         return "\n".join(recommendations) if recommendations else "Không có đề xuất nào"
     
     async def run(self, query: str) -> str:
         chat_history = "\n".join([f"{msg.role}: {msg.content}" for msg in self.context_manager.chat_history[-5:]])
         
+        # Get user's preferred name (full name if available, otherwise username)
+        user_name = self.user.full_name if (self.user.first_name and self.user.last_name) else self.user.user_name
+        
         response = await self.chain.ainvoke({
+            "user_name": user_name,
+            "today": datetime.now().strftime("%d/%m/%Y"),
             "emotional_context": self._build_emotional_context(),
             "recommendations": self._build_recommendations(),
             "chat_history": chat_history,

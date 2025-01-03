@@ -4,7 +4,6 @@ import Home from "./components/home/Home";
 import { Login} from "./components/auth/login";
 import { Register} from "./components/auth/Register";
 import { PublicRoute} from './components/auth/PublicRoute';
-import { JournalDetail } from './components/dailyJournal/JournalDetail'
 import { JournalList } from './components/dailyJournal/JournalList'
 import { AuthConsumer, AuthProvider } from "./context/JWTAuthContext";
 import { Flex, Spinner } from "@chakra-ui/react";
@@ -12,6 +11,7 @@ import { Authenticated } from "./components/auth/Authenticated";
 import { HomeNavBar } from './components/navbar/HomeNavBar';
 import ChatDetail from "./components/chat/ChatDetails";
 import Questionnaire from './components/questionnaire/Questionnaire';
+import Settings from './components/settings/Settings';
 
 function App() {
   return (
@@ -34,7 +34,8 @@ function App() {
               <Route path="/service/chat/:sessionId" element={<Authenticated><ChatDetail /></Authenticated>} />
               <Route path='/service/journal' element={<Authenticated><JournalList/></Authenticated>} />
               <Route path="/service/questionnaire" element={<Authenticated><Questionnaire /></Authenticated>} />
-          </Route>
+              <Route path="/service/settings" element={<Authenticated><Settings /></Authenticated>} />
+            </Route>
             <Route path='*' element ={<Navigate to ='/' />} />
         </Routes>
         )}

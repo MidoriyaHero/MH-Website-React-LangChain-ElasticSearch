@@ -1,4 +1,4 @@
-import {createContext, useEffect, useReducer, useRef} from 'react'
+import {createContext, useEffect, useReducer} from 'react'
 import {setSession, resetSession} from '../utils/session'
 import axiosInstance from '../services/axios'
 import {validateToken} from  '../utils/jwt'
@@ -14,6 +14,7 @@ const initialState = {
     ...initialState,
     login: () => Promise.resolve(),
     logout: () => Promise.resolve(),
+    setUser: () => Promise.resolve(),
   });
   
   const handlers = {
@@ -51,7 +52,7 @@ const initialState = {
   export const AuthProvider = (props) => {
     const { children } = props;
     const [state, dispatch] = useReducer(reducer, initialState);
-    const isMounted = useRef(false);
+    
   
     useEffect(() => {
       const initialize = async () => {
@@ -131,12 +132,22 @@ const initialState = {
       dispatch({ type: "LOGOUT" });
     };
   
+    const setUser = (user) => {
+      dispatch({
+        type: 'LOGIN',
+        payload: {
+          user,
+        },
+      });
+    };
+  
     return (
       <AuthContext.Provider
         value={{
           ...state,
           login,
           logout,
+          setUser,
         }}
       >
         {children}

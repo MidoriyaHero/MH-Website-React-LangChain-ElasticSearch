@@ -21,3 +21,5 @@ python-jose[cryptography]
 passlib
 pydantic[email]
 pydantic-settings
+pytest 
+pytest-asyncio

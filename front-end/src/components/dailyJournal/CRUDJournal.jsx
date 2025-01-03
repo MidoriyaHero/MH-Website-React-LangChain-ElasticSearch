@@ -22,7 +22,7 @@ export const CRUDJournal = ({ editable = false, defaultValues = {}, onSuccess, j
                 })
             } else {
                 // Create new journal
-                await axiosInstance.post('/journal/', data)
+                await axiosInstance.post('/journal/create', data)
                 toast({
                     title: 'Created!',
                     status: 'success',

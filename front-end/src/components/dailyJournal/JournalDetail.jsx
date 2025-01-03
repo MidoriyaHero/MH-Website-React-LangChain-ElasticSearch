@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from "react"
-import { useNavigate, useParams } from "react-router"
+import { useEffect, useState } from "react"
 import  axiosInstance  from '../../services/axios'
 import { Button, Center, Container, Spinner, Text, useToast, Tag, Wrap, WrapItem, Box } from "@chakra-ui/react"
 import { CRUDJournal } from "./CRUDJournal"

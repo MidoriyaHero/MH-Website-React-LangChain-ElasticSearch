@@ -34,3 +34,19 @@ class UserService:
             raise HTTPException(status_code= 400, detail= "Incorrect password")
         return user
     
+    @staticmethod
+    async def update_user(user_id: str, update_data: dict):
+        user = await UserService.get_user_by_id(user_id)
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Update only provided fields
+        for field, value in update_data.items():
+            if field == "password":
+                setattr(user, "hash_password", get_password(value))
+            else:
+                setattr(user, field, value)
+        
+        await user.save()
+        return user
+    
