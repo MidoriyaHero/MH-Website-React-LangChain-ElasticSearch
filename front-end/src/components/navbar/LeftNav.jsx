@@ -15,7 +15,7 @@ import { FiHome, FiMessageCircle, FiBook, FiLogOut, FiClipboard, FiSettings } fr
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import axiosInstance from "../../services/axios";
-
+import { ThemeToggle } from '../Theme/ThemeToggle';
 export const LeftNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -63,6 +63,7 @@ export const LeftNav = () => {
       top="0"
       transition="all 0.2s"
     >
+      <ThemeToggle showTooltip={true} marginLeft="auto"/>
       {/* User Profile Section */}
       <Flex direction="column" align="center" mb={8}>
         <Avatar

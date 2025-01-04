@@ -1,26 +1,36 @@
-import {Switch, useColorMode, FormLabel} from '@chakra-ui/react'
+import { IconButton, useColorMode, Tooltip, Flex } from '@chakra-ui/react';
+import { MdDarkMode, MdLightMode } from 'react-icons/md';
 
-export const ThemeToggle = ({showLable= false, ...rest}) => {
+export const ThemeToggle = ({ showTooltip = true, size = 'md', ...rest }) => {
+  const { toggleColorMode, colorMode } = useColorMode();
 
-    const {toggleColorMode, colorMode}= useColorMode();
+  const button = (
+    <IconButton
+      aria-label={`Switch to ${colorMode === 'light' ? 'dark' : 'light'} mode`}
+      icon={colorMode === 'light' ? <MdDarkMode /> : <MdLightMode />}
+      onClick={toggleColorMode}
+      variant="ghost"
+      size={size}
+      color={colorMode === 'light' ? 'gray.600' : 'yellow.400'}
+      _hover={{
+        bg: colorMode === 'light' ? 'gray.100' : 'gray.700',
+      }}
+      {...rest}
+    />
+  );
 
   return (
-    <>
-    {showLable&&(
-        <FormLabel htmlFor='theme-toggle' textColor='orange' mb ={0}>
-            Enable Dark Theme
-        </FormLabel>
-    )}
-    <Switch id='theme-toggler' size='sm' 
-    isChecked ={colorMode === 'dark'} 
-    isDisabled={false} 
-    value={colorMode}
-    colorScheme='green'
-    mr={2}
-    onChange={toggleColorMode}
-    {...rest}>
-
-    </Switch>
-    </>
-  )
-}
+    <Flex align="center" justify="center">
+      {showTooltip ? (
+        <Tooltip
+          label={`Switch to ${colorMode === 'light' ? 'dark' : 'light'} mode`}
+          placement="bottom"
+        >
+          {button}
+        </Tooltip>
+      ) : (
+        button
+      )}
+    </Flex>
+  );
+};

@@ -46,7 +46,7 @@ export const CRUDJournal = ({ editable = false, defaultValues = {}, onSuccess, j
     return (
         <>
             <Button
-                variant='calming'
+                colorScheme="brand"
                 onClick={onOpen}
                 width={editable ? '100%' : 'auto'}
                 mt={3}

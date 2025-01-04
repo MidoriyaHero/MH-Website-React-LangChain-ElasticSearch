@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
-import Chat from './components/chat/chat';
 import Home from "./components/home/Home";
 import { Login} from "./components/auth/login";
 import { Register} from "./components/auth/Register";
@@ -30,7 +29,7 @@ function App() {
             <Route path='/register' element ={<PublicRoute> <Register/> </PublicRoute>} />
             <Route path='/service'>
               <Route path="/service/home" element={<Authenticated><Home/></Authenticated>} />
-              <Route path="/service/chat" element={<Authenticated><Chat /></Authenticated>} />
+              <Route path="/service/chat" element={<Authenticated><ChatDetail /></Authenticated>} />
               <Route path="/service/chat/:sessionId" element={<Authenticated><ChatDetail /></Authenticated>} />
               <Route path='/service/journal' element={<Authenticated><JournalList/></Authenticated>} />
               <Route path="/service/questionnaire" element={<Authenticated><Questionnaire /></Authenticated>} />

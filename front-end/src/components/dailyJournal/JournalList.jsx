@@ -5,12 +5,14 @@ import { JournalCard } from './JournalCard';
 import { CRUDJournal } from './CRUDJournal';
 import { LeftNav } from '../navbar/LeftNav';
 import { JournalDetail } from './JournalDetail';
+import { useColorMode } from '@chakra-ui/react';
 
 export const JournalList = () => {
     const [journals, setJournals] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedJournalId, setSelectedJournalId] = useState(null);
     const isMounted = useRef(false);
+    const { colorMode } = useColorMode();
 
     useEffect(() => {
         if (isMounted.current) return;
@@ -41,7 +43,10 @@ export const JournalList = () => {
             </Box>
             
             {/* Journal List Section */}
-            <Container mt={9} w="40%" bg="white" justify="center" align="center">
+            <Container mt={9} w="40%" bg={colorMode === 'light' ? 'white' : 'gray.800'} justify="center" align="center">
+                <Flex justify="space-between" align="center" mb={4}>
+                    <Text fontWeight="bold" fontSize="xl">Journal List</Text>
+                </Flex>
                 <CRUDJournal onSuccess={fetchJournal} />
                 {loading ? (
                     <Center mt={6}>

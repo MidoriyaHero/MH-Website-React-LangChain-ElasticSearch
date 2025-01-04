@@ -121,7 +121,7 @@ export const JournalDetail = ({ journalId, onUpdate }) => {
                     {journal.themes && journal.themes.length > 0 && (
                         <>
                             <Text fontSize={16} fontWeight="semibold" mb={2}>
-                                Chủ đề:
+                                Từ khóa:
                             </Text>
                             <Wrap mb={3}>
                                 {journal.themes.map((theme, index) => (

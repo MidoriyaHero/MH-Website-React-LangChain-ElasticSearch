@@ -37,34 +37,34 @@ class PersonalizedChatAgent:
         self.context_manager = ContextManager()
         
         self.chat_prompt = ChatPromptTemplate.from_messages([
-            ("system", """Bạn là một trợ lý AI thấu cảm và hỗ trợ sức khỏe tinh thần. 
-             hôm nay là ngày {today}
+            ("system", """
+            Bạn là trợ lý hỗ trợ sức khỏe tâm thần. Bạn chỉ có kiến thức về lĩnh vực tâm lý và các phương pháp hỗ trợ tâm lý. Khi được hỏi về các lĩnh vực khác hãy trả lời "Tôi không biết về lĩnh vực đó".
+            Mục tiêu của bạn là phản hồi với sự đồng cảm, thấu hiểu và lời khuyên thực tế. 
+            Hãy thừa nhận cảm xúc của người dùng, xác nhận trải nghiệm của họ, 
+            và đề xuất các hành động hoặc nguồn lực tích cực. 
+            Duy trì giọng điệu thân thiện, chuyên nghiệp và không được phán xét. 
 
-Thông tin người dùng:
-Tên: {user_name}
+            Nếu người dùng đề cập đến khủng hoảng hoặc trong từ khóa nhật ký có các triệu chứng tâm lý nặng, hãy khuyến khích họ tìm kiếm sự trợ giúp chuyên nghiệp ngay lập tức hoặc liên hệ với đường dây nóng: 115 hoặc 1900 1267. 
+            Tránh chẩn đoán hoặc kê đơn điều trị, mà hãy tập trung lắng nghe và hướng dẫn nhẹ nhàng.
 
-Trạng thái cảm xúc gần đây của người dùng:
-{emotional_context}
+            ### Thông tin người dùng:
+            - Tên: {user_name}
+            - Trạng thái cảm xúc gần đây: {emotional_context} --ĐÂY LÀ PHẦN QUAN TRỌNG
+            - Các đề xuất cần thiết: {recommendations}
+            - Nội dung cuộc trò chuyện trước đó: {chat_history}
 
-Các đề xuất cần thiết:
-{recommendations}
-
-Nội dung cuộc trò chuyện trước đó:
-{chat_history}
-
-Hướng dẫn:
-- Gọi người dùng bằng tên của họ khi phù hợp
-- Đưa ra lời khuyên và hướng dẫn phù hợp với trạng thái cảm xúc của người dùng dựa vào Cảm xúc từ nhật ký và điểm đánh giá lo âu
-- Luôn tôn trọng và đối xử với người dùng như một người bạn thân
-- Luôn trả lời bằng tiếng Việt
-- Thể hiện sự đồng cảm và hỗ trợ
-- Tham khảo thông tin liên quan từ nhật ký của họ khi phù hợp
-- Nếu họ đang thể hiện dấu hiệu căng thẳng, hãy ghi nhận cảm xúc của họ
-- Duy trì giọng điệu chuyên nghiệp nhưng thân thiện
-- Nếu cần đưa ra đề xuất, hãy lồng ghép một cách tự nhiên vào cuộc trò chuyện
-- Khi đề cập đến GAD-7, gọi nó là "bảng câu hỏi đánh giá lo âu"
-- Khi đề cập đến journal, gọi nó là "nhật ký cảm xúc"
-            """),
+            ### Hướng dẫn:
+            **ƯU TIÊN:** LUÔN ƯU TIÊN KIỂM TRA 'Trạng thái cảm xúc gần đây'.  khi điểm đánh giá lo âu vượt quá 14 hoặc trong cảm xúc/ từ khóa tóm tắt từ nhật ký có các triệu chứng tiêu cực nặng nề. 
+                LẬP TỨC đề cập tới vấn đề họ đang đối mặt và đề xuất các đường dây nóng: 115 hoặc 1900 1267 và yêu cầu người dùng tìm sự giúp đỡ.
+            **Ngữ điệu:** Sử dụng giọng điệu chuyên nghiệp nhưng thân thiện, như một người bạn đáng tin cậy.
+            **đề xuất:** khi người dùng cảm thấy không ổn có thể đề xuất họ dựa trên đề xuất cần thiết.
+            **Thông tin từ trạng thái cảm xúc:** tham khảo và kết nối thông tin từ "Trạng thái cảm xúc gần đây" của họ để cá nhân hóa câu trả lời. 
+            **Ngôn ngữ:** Luôn trả lời bằng tiếng Việt và điều chỉnh phong cách phù hợp với lứa tuổi thanh thiếu niên.
+            **Thời gian hiện tại:** Bao gồm thông tin hôm nay là ngày {today} để cá nhân hóa tương tác.
+            Trả lời ngắn gọn nhất có thể.
+            Gọi người dùng bằng tên của họ khi phù hợp để tạo sự thân mật.
+            Hãy luôn nhớ rằng mục tiêu là giúp người dùng cảm thấy được lắng nghe, thấu hiểu và hỗ trợ, đồng thời khuyến khích họ tìm đến các nguồn trợ giúp chuyên nghiệp nếu cần.
+                        """),
             ("user", "{query}")
         ])
         
@@ -81,11 +81,13 @@ Hướng dẫn:
         # Add recent journal information
         recent_journals = self.context_manager.get_recent_journals()
         if recent_journals:
-            context.append("\nCảm xúc từ nhật ký gần đây:")
+            context.append("\tóm tắt nhật ký gần đây:")
             for journal in recent_journals[-3:]:  # Last 3 journals
                 context.append(f"- {journal.create_at.date()}: {journal.sentiment_analysis}")
                 if journal.emotions:
                     context.append(f"  Cảm xúc: {', '.join(journal.emotions)}")
+                if journal.themes:  # Add theme if it exists
+                    context.append(f"  từ khóa: {', '.join(journal.themes)}")
         print(context)
         return "\n".join(context)
     
@@ -97,22 +99,25 @@ Hướng dẫn:
             
         if self.context_manager.should_recommend_gad7():
             recommendations.append("Đề xuất làm bảng câu hỏi đánh giá lo âu")
-        print(recommendations)
+        
         return "\n".join(recommendations) if recommendations else "Không có đề xuất nào"
     
     async def run(self, query: str) -> str:
         chat_history = "\n".join([f"{msg.role}: {msg.content}" for msg in self.context_manager.chat_history[-5:]])
         
-        # Get user's preferred name (full name if available, otherwise username)
+        # Get user's preferred name
         user_name = self.user.full_name if (self.user.first_name and self.user.last_name) else self.user.user_name
         
-        response = await self.chain.ainvoke({
+        # Create the input dictionary
+        input_dict = {
             "user_name": user_name,
             "today": datetime.now().strftime("%d/%m/%Y"),
             "emotional_context": self._build_emotional_context(),
             "recommendations": self._build_recommendations(),
             "chat_history": chat_history,
             "query": query
-        })
+        }
+            
+        response = await self.chain.ainvoke(input_dict)
         
         return response["text"] 
