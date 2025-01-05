@@ -45,7 +45,7 @@ export const JournalList = () => {
             {/* Journal List Section */}
             <Container mt={9} w="40%" bg={colorMode === 'light' ? 'white' : 'gray.800'} justify="center" align="center">
                 <Flex justify="space-between" align="center" mb={4}>
-                    <Text fontWeight="bold" fontSize="xl">Journal List</Text>
+                    <Text fontWeight="bold" fontSize="xl">Nhật ký</Text>
                 </Flex>
                 <CRUDJournal onSuccess={fetchJournal} />
                 {loading ? (

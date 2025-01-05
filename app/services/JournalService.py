@@ -25,7 +25,7 @@ class JournalService:
         # Only evaluate if not evaluated before
         if not journal.is_evaluated:
             # Use the class attribute instead of instance attribute
-            evaluation = await JournalService.evaluation_agent.evaluate(data.description)
+            evaluation = await JournalService.evaluation_agent.evaluate(data.description, user)
             journal.sentiment_analysis = evaluation.get("sentiment")
             journal.emotions = evaluation.get("emotions", [])
             journal.themes = evaluation.get("themes", [])
@@ -45,7 +45,7 @@ class JournalService:
         # Re-evaluate only if content changed and not yet evaluated
         if data.description:
             # Use the class attribute instead of instance attribute
-            evaluation = await JournalService.evaluation_agent.evaluate(data.description)
+            evaluation = await JournalService.evaluation_agent.evaluate(data.description, user)
             data.sentiment_analysis = evaluation.get("sentiment")
             data.emotions = evaluation.get("emotions", [])
             data.themes = evaluation.get("themes", [])

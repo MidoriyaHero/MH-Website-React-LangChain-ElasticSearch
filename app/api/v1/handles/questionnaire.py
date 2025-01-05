@@ -7,6 +7,7 @@ from app.api.v1.dependency.UserDependency import get_current_user
 from app.services.QuestionnaireService import QuestionnaireService
 from app.schemas.QuestionnaireSchema import (
     GAD7Questions,
+    PHQ9Questions,
     QuestionnaireResponse,
     QuestionnaireResult
 )
@@ -31,6 +32,23 @@ async def submit_gad7(
     """Submit GAD-7 questionnaire responses"""
     try:
         result = await QuestionnaireService.submit_gad7(current_user, responses.responses)
+        return result
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@questionnaire_router.get("/phq9/questions")
+async def get_phq9_questions(current_user: User = Depends(get_current_user)):
+    """Get PHQ-9 questionnaire questions"""
+    return PHQ9Questions().questions
+
+@questionnaire_router.post("/phq9/submit", response_model=QuestionnaireResult)
+async def submit_phq9(
+    responses: QuestionnaireResponse,
+    current_user: User = Depends(get_current_user)
+):
+    """Submit PHQ-9 questionnaire responses"""
+    try:
+        result = await QuestionnaireService.submit_phq9(current_user, responses.responses)
         return result
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))

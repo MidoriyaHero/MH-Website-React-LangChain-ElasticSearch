@@ -51,18 +51,18 @@ export const Login = () => {
         rounded='lg'
         shadow='lg'
         width={{base: '90%', md: '400px'}}>
-            <Heading textColor='brand.700' mb={6}>Login</Heading>
+            <Heading textColor='brand.700' mb={6}>Đăng nhập</Heading>
             <form onSubmit={handleSubmit(onSubmit)} style={{width: '100%'}}>
                 <FormControl isInvalid={errors.email} mb={4}>
                     <FormLabel>Email</FormLabel>
                     <Input
-                    placeholder='Enter your email'
+                    placeholder='Nhập email của bạn'
                     type='email'
                     {...register('email', {
-                        required: "Email is required",
+                        required: "Bắt buộc nhập Email",
                         pattern: {
                             value: /^\S+@\S+$/i,
-                            message: "Invalid email address",
+                            message: "Email không đúng định dạng",
                         },
                     })}
                     />
@@ -72,15 +72,15 @@ export const Login = () => {
                 </FormControl>
                 
                 <FormControl isInvalid={errors.password} mb={6}>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel>Mật khẩu</FormLabel>
                     <Input
-                    placeholder='Enter your password'
+                    placeholder='Nhập mật khẩu'
                     type='password'
                     {...register('password', {
-                        required: "Password is required",
+                        required: "Mật khẩu bắt buộc nhập",
                         minLength: {
                             value: 5,
-                            message: "Password must be at least 5 characters",
+                            message: "Mật khẩu phải có ít nhất 5 ký tự",
                         },
                     })}
                     />
@@ -95,14 +95,14 @@ export const Login = () => {
                 colorScheme="brand"
                 isLoading={isSubmitting}
                 mb={4}>
-                    Login
+                    Đăng nhập
                 </Button>
             </form>
 
             <Button 
             onClick={()=> navigate('/register', {replace:true})} 
             colorScheme='brand' variant='link' mb={2}>
-                Or Signup
+                Hoặc đăng ký
             </Button>
             <Button
           leftIcon={<FiHome />}
@@ -111,7 +111,7 @@ export const Login = () => {
           color="white"
           _hover={{ bg: "brand.500" }}
           onClick={() => navigate('/')}
-        >Back to Home</Button>
+        >Về trang chủ</Button>
         </Flex>
         </Flex>
 }

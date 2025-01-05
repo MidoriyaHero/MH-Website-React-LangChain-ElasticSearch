@@ -51,31 +51,31 @@ export const CRUDJournal = ({ editable = false, defaultValues = {}, onSuccess, j
                 width={editable ? '100%' : 'auto'}
                 mt={3}
             >
-                {editable ? 'Edit' : 'Create New Journal'}
+                {editable ? 'Sửa' : 'Tạo nhật ký mới'}
             </Button>
 
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
                 <ModalContent>
                     <form onSubmit={handleSubmit(onSubmit)}>
-                        <ModalHeader>{editable ? 'Edit Journal' : 'Create New Journal'}</ModalHeader>
+                        <ModalHeader>{editable ? 'Sửa' : 'Tạo nhật ký mới'}</ModalHeader>
                         <ModalCloseButton />
                         <ModalBody>
                             <FormControl>
-                                <FormLabel>Title</FormLabel>
-                                <Input {...register('title')} />
+                                <FormLabel >Tiêu đề</FormLabel>
+                                <Input {...register('title')} placeholder='Ngày 1.5.2002, v.v' />
                             </FormControl>
                             <FormControl mt={3}>
-                                <FormLabel>Description</FormLabel>
-                                <Textarea {...register('description')} />
+                                <FormLabel>Nội dung</FormLabel>
+                                <Textarea {...register('description')} placeholder='Hôm nay bạn cảm thấy thế nào?' />
                             </FormControl>
                         </ModalBody>
                         <ModalFooter>
                             <Button variant='ghost' mr={3} onClick={onClose}>
-                                Close
+                                Đóng
                             </Button>
-                            <Button type='submit' variant='calming'>
-                                {editable ? 'Save Changes' : 'Create'}
+                            <Button type='submit' colorScheme="brand">
+                                {editable ? 'Lưu nhé <3' : 'Tạo'}
                             </Button>
                         </ModalFooter>
                     </form>

@@ -44,11 +44,11 @@ export const LeftNav = () => {
   };
 
   const navItems = [
-    { icon: FiHome, label: 'Home', path: '/service/home' },
+    { icon: FiHome, label: 'Trang chủ', path: '/service/home' },
     { icon: FiMessageCircle, label: 'Chat', path: 'chat', onClick: navigateToLatestChat },
-    { icon: FiBook, label: 'Daily Journal', path: '/service/journal' },
-    { icon: FiClipboard, label: 'Questionnaire', path: '/service/questionnaire' },
-    { icon: FiSettings, label: 'Settings', path: '/service/settings' },
+    { icon: FiBook, label: 'Nhật ký', path: '/service/journal' },
+    { icon: FiClipboard, label: 'Bảng câu hỏi', path: '/service/questionnaire' },
+    { icon: FiSettings, label: 'Cài đặt', path: '/service/settings' },
   ];
 
   return (
@@ -131,7 +131,7 @@ export const LeftNav = () => {
           size="lg"
           transition="all 0.2s"
         >
-          Logout
+          Đăng xuất
         </Button>
       </Tooltip>
     </Box>

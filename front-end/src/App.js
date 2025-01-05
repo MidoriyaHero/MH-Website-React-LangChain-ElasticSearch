@@ -11,6 +11,7 @@ import { HomeNavBar } from './components/navbar/HomeNavBar';
 import ChatDetail from "./components/chat/ChatDetails";
 import Questionnaire from './components/questionnaire/Questionnaire';
 import Settings from './components/settings/Settings';
+import { MainNavBar } from './components/navbar/MainNavBar';
 
 function App() {
   return (
@@ -28,7 +29,7 @@ function App() {
             <Route path='/login' element ={<PublicRoute> <Login /> </PublicRoute>} />
             <Route path='/register' element ={<PublicRoute> <Register/> </PublicRoute>} />
             <Route path='/service'>
-              <Route path="/service/home" element={<Authenticated><Home/></Authenticated>} />
+              <Route path="/service/home" element={<Authenticated> <MainNavBar/> <Home/></Authenticated>} />
               <Route path="/service/chat" element={<Authenticated><ChatDetail /></Authenticated>} />
               <Route path="/service/chat/:sessionId" element={<Authenticated><ChatDetail /></Authenticated>} />
               <Route path='/service/journal' element={<Authenticated><JournalList/></Authenticated>} />

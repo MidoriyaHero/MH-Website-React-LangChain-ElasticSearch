@@ -22,17 +22,17 @@ const Home = () => {
         mx="auto"
       >
         <Heading size="2xl" mb={4} color='brand.600'>
-          Chat Seamlessly, Reflect Deeply
+          Trò Chuyện Mượt Mà, Suy Ngẫm Sâu Sắc
         </Heading>
         <Text fontSize="lg" color='brand.700' mb={6}>
-          Engage in intelligent conversations and keep track of your thoughts with our journaling feature.
+          Tham gia các cuộc trò chuyện thông minh và ghi lại suy nghĩ của bạn với tính năng viết nhật ký của chúng tôi.
         </Text>
         <HStack spacing={6}>
           <Button colorScheme="brand" size="lg" onClick={() => navigate('/service/chat')}>
-            Start Chatting
+            Bắt Đầu Trò Chuyện
           </Button>
           <Button variant="outline" colorScheme="brand" size="lg" onClick={() => navigate('/service/journal')}>
-            Write a Journal
+            Viết Nhật Ký
           </Button>
         </HStack>
       </Flex>
@@ -50,10 +50,10 @@ const Home = () => {
           justify="space-around"
         >
           <Heading size="md" mb={{ base: 2, md: 0 }}>
-            Smart Chat
+            Trò Chuyện Thông Minh
           </Heading>
           <Text fontSize="md" color="brand.700" align="center" maxW="400px">
-            AI-powered chat for instant assistance and engaging conversations.
+            Trò chuyện được hỗ trợ bởi AI để trợ giúp tức thì và các cuộc hội thoại hấp dẫn.
           </Text>
         </Flex>
         <Flex
@@ -67,10 +67,10 @@ const Home = () => {
           justify="space-around"
         >
           <Heading size="md" mb={{ base: 2, md: 0 }}>
-            Daily Journal
+            Nhật Ký Hàng Ngày
           </Heading>
           <Text fontSize="md" color="brand.700" align="center" maxW="400px">
-            Record and organize your daily thoughts with ease.
+            Ghi lại và tổ chức suy nghĩ hàng ngày của bạn một cách dễ dàng.
           </Text>
         </Flex>
         <Flex
@@ -84,10 +84,10 @@ const Home = () => {
           justify="space-around"
         >
           <Heading size="md" mb={{ base: 2, md: 0 }}>
-            Personalized Insights
+            Thông Tin Cá Nhân Hóa
           </Heading>
           <Text fontSize="md" color="brand.700" align="center" maxW="400px">
-            Get tailored suggestions and summaries for better self-reflection.
+            Nhận các gợi ý và tóm tắt được cá nhân hóa để cải thiện sự tự suy ngẫm.
           </Text>
         </Flex>
       </VStack>

@@ -11,7 +11,10 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str = os.getenv('OPENAI_API_KEY')
     JWT_KEY: str = os.getenv('JWT_KEY')
     JWT_REFRESH_KEY: str = os.getenv('JWT_REFRESH_KEY')
-
+    EMAIL_PASS: str  = os.getenv('EMAIL_PASS')
+    EMAIL_USER: str = os.getenv('EMAIL_USER')
+    SMTP_SERVER: str = os.getenv('SMTP_SERVER')
+    SMTP_PORT: str = os.getenv('SMTP_PORT')
     EMBEDING_MODEL: str = 'models/embedding-001'
     INDEX_NAME: str = 'mentalhealth-index'
     ES_URL: str = "http://localhost:9200"

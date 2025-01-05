@@ -2,9 +2,35 @@ from langchain.prompts import ChatPromptTemplate
 from langchain.schema.output_parser import StrOutputParser
 from typing import Dict
 import json
-
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from datetime import datetime
+from app.core.config import settings
 class JournalEvaluationAgent:
     def __init__(self, llm):
+        self.llm = llm
+        # Define severe keywords categories
+        self.severe_keywords = {
+            'suicide_related': [
+                'tự tử', 'chết', 'suicide', 'death', 'kill', 'end life', 'không muốn sống',
+                'muốn chết', 'kết thúc', 'tôi sẽ chết', 'không còn ý nghĩa', 'buông xuôi',
+                'từ bỏ', 'giải thoát', 'kết thúc tất cả'
+            ],
+            'self_harm': [
+                'tự làm đau', 'cắt tay', 'đau đớn', 'tự hại', 'self harm', 'hurt myself',
+                'đập đầu', 'tự đâm', 'tự cắt'
+            ],
+            'severe_depression': [
+                'tuyệt vọng', 'vô dụng', 'không xứng đáng', 'không ai yêu', 'không còn hy vọng',
+                'không thể chịu được', 'quá mệt mỏi', 'không muốn thức dậy', 'không còn muốn tiếp tục'
+            ],
+            'severe_anxiety': [
+                'hoảng loạn', 'không thở được', 'tim đập nhanh', 'sợ hãi tột độ',
+                'không kiểm soát', 'run rẩy', 'đau ngực', 'chóng mặt nặng'
+            ]
+        }
+        
         self.evaluation_prompt = ChatPromptTemplate.from_messages([
             ("system", """Bạn là một chuyên gia phân tích tâm lý và đánh giá cảm xúc. 
             Hãy đọc và phân tích nội dung nhật ký dưới đây, sau đó cung cấp:
@@ -57,11 +83,81 @@ class JournalEvaluationAgent:
         
         self.chain = self.evaluation_prompt | llm | StrOutputParser()
     
-    async def evaluate(self, journal_content: str) -> Dict:
+    async def _send_alert_email(self, user, journal_content: str, detected_keywords: Dict[str, list]):
+        """Send alert email when severe content is detected"""
+        try:
+            # Email configuration - should be moved to environment variables
+            smtp_server = settings.SMTP_SERVER
+            smtp_port = settings.SMTP_PORT
+            sender_email = settings.EMAIL_USER
+            sender_password = settings.EMAIL_PASS
+            
+            # Create message
+            msg = MIMEMultipart()
+            msg['From'] = sender_email
+            msg['To'] = user.emergency_contact_email
+            msg['Subject'] = f"URGENT: Mental Health Alert for {user.user_name}"
+            
+            # Prepare email body
+            body = f"""
+            URGENT: Mental Health Alert
+
+            User: {user.user_name}
+            Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+            
+            Detected concerning content in user's journal:
+            """
+            
+            for category, keywords in detected_keywords.items():
+                if keywords:
+                    body += f"\n{category}:\n- {', '.join(keywords)}"
+            
+            body += f"\n\nJournal Content:\n{journal_content}"
+            
+            msg.attach(MIMEText(body, 'plain'))
+            
+            # Send email
+            with smtplib.SMTP(smtp_server, smtp_port) as server:
+                server.starttls()
+                server.login(sender_email, sender_password)
+                server.send_message(msg)
+                
+        except Exception as e:
+            print(f"Failed to send alert email: {e}")
+
+    def _check_severity(self, text: str, emotions: list, themes: list) -> Dict[str, list]:
+        """Check content for severe keywords"""
+        detected = {}
+        combined_text = f"{text} {' '.join(emotions)} {' '.join(themes)}".lower()
+        
+        for category, keywords in self.severe_keywords.items():
+            found_keywords = [keyword for keyword in keywords if keyword in combined_text]
+            if found_keywords:
+                detected[category] = found_keywords
+                
+        return detected
+
+    async def evaluate(self, journal_content: str, user) -> Dict:
         """Evaluates journal content and returns structured analysis"""
         try:
             result = await self.chain.ainvoke({"input": journal_content})
-            return json.loads(result)
+            analysis = json.loads(result)
+            
+            # Check for severe content
+            detected_keywords = self._check_severity(
+                journal_content,
+                analysis.get('emotions', []),
+                analysis.get('themes', [])
+            )
+            
+            # If severe content detected, send alert
+            if detected_keywords:
+                await self._send_alert_email(user, journal_content, detected_keywords)
+                analysis['severity_alert'] = True
+                analysis['detected_concerns'] = detected_keywords
+            
+            return analysis
+            
         except Exception as e:
             print(f"Lỗi trong quá trình đánh giá: {e}")
             return {

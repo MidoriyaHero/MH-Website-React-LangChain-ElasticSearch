@@ -18,6 +18,11 @@ import {
   Th,
   Td,
   Badge,
+  Tabs,
+  TabList,
+  Tab,
+  TabPanels,
+  TabPanel,
 } from '@chakra-ui/react';
 import { useForm, Controller } from 'react-hook-form';
 import axiosInstance from '../../services/axios';
@@ -26,19 +31,24 @@ import { LeftNav } from '../navbar/LeftNav';
 
 
 const Questionnaire = () => {
-  const [questions, setQuestions] = useState([]);
+  const [gad7Questions, setGad7Questions] = useState([]);
+  const [phq9Questions, setPhq9Questions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [history, setHistory] = useState([]);
   const toast = useToast();
-  const { handleSubmit, control, reset } = useForm();
+  const { handleSubmit: handleGad7Submit, control: gad7Control, reset: resetGad7 } = useForm();
+  const { handleSubmit: handlePhq9Submit, control: phq9Control, reset: resetPhq9 } = useForm();
   const navigate = useNavigate();
-
 
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const response = await axiosInstance.get('/questionnaire/questionnaire/gad7/questions');
-        setQuestions(response.data);
+        const [gad7Response, phq9Response] = await Promise.all([
+          axiosInstance.get('/questionnaire/questionnaire/gad7/questions'),
+          axiosInstance.get('/questionnaire/questionnaire/phq9/questions')
+        ]);
+        setGad7Questions(gad7Response.data);
+        setPhq9Questions(phq9Response.data);
       } catch (error) {
         toast({
           title: 'Error fetching questions',
@@ -54,6 +64,7 @@ const Questionnaire = () => {
 
     fetchQuestions();
   }, [toast]);
+
   const fetchHistory = async () => {
     try {
       const response = await axiosInstance.get('/questionnaire/questionnaire/history');
@@ -68,28 +79,52 @@ const Questionnaire = () => {
       });
     }
   };
+
   useEffect(() => {
     fetchHistory();
   }, []);
 
-  const onSubmit = async (data) => {
+  const onGad7Submit = async (data) => {
     const responses = Object.values(data).map(Number);
     try {
       const response = await axiosInstance.post('/questionnaire/questionnaire/gad7/submit', { responses });
       toast({
-        title: 'Submission Successful',
-        description: `Your total score is ${response.data.total_score} (${response.data.severity})`,
+        title: 'Đánh giá thành công',
+        description: `Tổng điểm của bạn là ${response.data.total_score} (${response.data.severity})`,
         status: 'success',
         duration: 5000,
         isClosable: true,
       });
-      reset();
-      navigate('/service/questionnaire');
+      resetGad7();
       fetchHistory();
     } catch (error) {
       toast({
-        title: 'Submission Failed',
-        description: error.response?.data?.detail || "Please try again",
+        title: 'Đánh giá thất bại',
+        description: error.response?.data?.detail || "Vui lòng thử lại",
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const onPhq9Submit = async (data) => {
+    const responses = Object.values(data).map(Number);
+    try {
+      const response = await axiosInstance.post('/questionnaire/questionnaire/phq9/submit', { responses });
+      toast({
+        title: 'Đánh giá thành công',
+        description: `Tổng điểm của bạn là ${response.data.total_score} (${response.data.severity})`,
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      });
+      resetPhq9();
+      fetchHistory();
+    } catch (error) {
+      toast({
+        title: 'Đánh giá thất bại',
+        description: error.response?.data?.detail || "Vui lòng thử lại",
         status: 'error',
         duration: 3000,
         isClosable: true,
@@ -98,20 +133,14 @@ const Questionnaire = () => {
   };
 
   const getSeverityColor = (severity) => {
-    switch (severity) {
-      case 'Mild Anxiety':
-        return 'yellow';
-      case 'Moderate Anxiety':
-        return 'orange';
-      case 'Severe Anxiety':
-        return 'red';
-      default:
-        return 'green';
-    }
+    if (severity.includes('nhẹ')) return 'yellow';
+    if (severity.includes('vừa') || severity.includes('trung bình')) return 'orange';
+    if (severity.includes('nặng')) return 'red';
+    return 'green';
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleDateString('vi-VN', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -129,91 +158,123 @@ const Questionnaire = () => {
   }
 
   return (
-    <Flex >
-    <Box w="15%" >
+    <Flex>
+      <Box w="15%">
         <LeftNav />
-    </Box>
-    
-      <Box
-        maxW="800px"
-        mx="auto"
-        p={6}
-        bg="white"
-        rounded="md"
-        shadow="md"
-        mt={6}
-        w="100%"
-      >
-        <Heading mb={6} color="brand.700">GAD-7 Questionnaire</Heading>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Stack spacing={8}>
-            {questions.map((question, index) => (
-              <FormControl key={index} as="fieldset" isRequired>
-                <FormLabel mb={4} color="brand.600">
-                  {index + 1}. {question}
-                </FormLabel>
-                <Controller
-                  name={`response_${index}`}
-                  control={control}
-                  defaultValue=""
-                  rules={{ required: "This question is required" }}
-                  render={({ field }) => (
-                    <RadioGroup {...field}>
-                      <Stack direction="row" spacing={4}>
-                        <Radio value="0">Not at all</Radio>
-                        <Radio value="1">Several days</Radio>
-                        <Radio value="2">More than half the days</Radio>
-                        <Radio value="3">Nearly every day</Radio>
-                      </Stack>
-                    </RadioGroup>
-                  )}
-                />
-              </FormControl>
-            ))}
-          </Stack>
-          <Button
-            mt={10}
-            colorScheme="brand"
-            type="submit"
-            width="100%"
-          >
-            Submit
-          </Button>
-        </form>
+      </Box>
 
-        
-        </Box>
-        <Box w='35%' mt={10}>
-          <Heading size="md" mb={4} color="brand.600">History</Heading>
-          <Box overflowX="auto">
-            <Table variant="simple">
-              <Thead>
-                <Tr>
-                  <Th>Date</Th>
-                  <Th>Score</Th>
-                  <Th>Severity</Th>
+      <Box w="50%" p={6}>
+        <Tabs isFitted variant="enclosed">
+          <TabList mb="1em">
+            <Tab>GAD-7 (Lo âu)</Tab>
+            <Tab>PHQ-9 (Trầm cảm)</Tab>
+          </TabList>
+
+          <TabPanels>
+            <TabPanel>
+              <Heading mb={6} color="brand.700" size="lg">Đánh giá mức độ lo âu (GAD-7)</Heading>
+              <form onSubmit={handleGad7Submit(onGad7Submit)}>
+                <Stack spacing={8}>
+                  {gad7Questions.map((question, index) => (
+                    <FormControl key={index} isRequired>
+                      <FormLabel mb={4} color="brand.600">
+                        {index + 1}. {question}
+                      </FormLabel>
+                      <Controller
+                        name={`response_${index}`}
+                        control={gad7Control}
+                        defaultValue=""
+                        rules={{ required: "Câu hỏi này là bắt buộc" }}
+                        render={({ field }) => (
+                          <RadioGroup {...field}>
+                            <Stack direction="row" spacing={4}>
+                              <Radio value="0">Không có</Radio>
+                              <Radio value="1">Vài ngày</Radio>
+                              <Radio value="2">Hơn nửa số ngày</Radio>
+                              <Radio value="3">Gần như mỗi ngày</Radio>
+                            </Stack>
+                          </RadioGroup>
+                        )}
+                      />
+                    </FormControl>
+                  ))}
+                </Stack>
+                <Button mt={10} colorScheme="brand" type="submit" width="100%">
+                  Hoàn thành
+                </Button>
+              </form>
+            </TabPanel>
+
+            <TabPanel>
+              <Heading mb={6} color="brand.700" size="lg">Đánh giá mức độ trầm cảm (PHQ-9)</Heading>
+              <form onSubmit={handlePhq9Submit(onPhq9Submit)}>
+                <Stack spacing={8}>
+                  {phq9Questions.map((question, index) => (
+                    <FormControl key={index} isRequired>
+                      <FormLabel mb={4} color="brand.600">
+                        {index + 1}. {question}
+                      </FormLabel>
+                      <Controller
+                        name={`response_${index}`}
+                        control={phq9Control}
+                        defaultValue=""
+                        rules={{ required: "Câu hỏi này là bắt buộc" }}
+                        render={({ field }) => (
+                          <RadioGroup {...field}>
+                            <Stack direction="row" spacing={4}>
+                              <Radio value="0">Không có</Radio>
+                              <Radio value="1">Vài ngày</Radio>
+                              <Radio value="2">Hơn nửa số ngày</Radio>
+                              <Radio value="3">Gần như mỗi ngày</Radio>
+                            </Stack>
+                          </RadioGroup>
+                        )}
+                      />
+                    </FormControl>
+                  ))}
+                </Stack>
+                <Button mt={10} colorScheme="brand" type="submit" width="100%">
+                  Hoàn thành
+                </Button>
+              </form>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Box>
+
+      <Box w="40%" p={6}>
+        <Heading size="md" mb={4} color="brand.600">Lịch sử đánh giá</Heading>
+        <Box overflowX="auto">
+          <Table variant="simple">
+            <Thead>
+              <Tr>
+                <Th>Ngày</Th>
+                <Th>Loại</Th>
+                <Th>Điểm</Th>
+                <Th>Mức độ</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {history.map((result) => (
+                <Tr key={result.response_id}>
+                  <Td>{formatDate(result.timestamp)}</Td>
+                  <Td>{result.questionnaire_type}</Td>
+                  <Td>{result.total_score}</Td>
+                  <Td>
+                    <Badge
+                      colorScheme={getSeverityColor(result.severity)}
+                      p={2}
+                      borderRadius="full"
+                    >
+                      {result.severity}
+                    </Badge>
+                  </Td>
                 </Tr>
-              </Thead>
-              <Tbody>
-                {history.map((result) => (
-                  <Tr key={result.response_id}>
-                    <Td>{formatDate(result.timestamp)}</Td>
-                    <Td>{result.total_score}</Td>
-                    <Td>
-                      <Badge 
-                        colorScheme={getSeverityColor(result.severity)}
-                        p={2}
-                        borderRadius="full"
-                      >
-                        {result.severity}
-                      </Badge>
-                    </Td>
-                  </Tr>
-                ))}
-              </Tbody>
-            </Table>
-          </Box>
+              ))}
+            </Tbody>
+          </Table>
         </Box>
+      </Box>
     </Flex>
   );
 };

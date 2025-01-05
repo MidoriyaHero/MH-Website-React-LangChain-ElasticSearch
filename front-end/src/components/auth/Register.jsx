@@ -50,7 +50,7 @@ export const Register = () => {
           p={12}
           rounded={6}
         >
-          <Heading textColor='brand' mb={6}>Register</Heading>
+          <Heading textColor='brand.700' mb={6}>Đăng ký</Heading>
           <form onSubmit={handleSubmit(onSubmit)}>
             <FormControl isInvalid={errors.email}>
               <Input
@@ -69,21 +69,21 @@ export const Register = () => {
             </FormControl>
             <FormControl isInvalid={errors.username}>
               <Input
-                placeholder="username"
+                placeholder="Tên người dùng"
                 background={('brand.100')}
                 type="text"
                 variant="filled"
                 size="lg"
                 mt={6}
                 {...register("username", {
-                  required: "This filed is required",
+                  required: "Bắt buộc nhập tên người dùng",
                   minLength: {
                     value: 5,
-                    message: "Username must be at least 5 characters",
+                    message: "Tên người dùng phải có ít nhất 5 ký tự",
                   },
                   maxLength: {
                     value: 24,
-                    message: "Username must be at most 24 characters",
+                    message: "Tên người dùng không được quá 24 ký tự",
                   },
                 })}
               />
@@ -93,21 +93,18 @@ export const Register = () => {
             </FormControl>
             <FormControl isInvalid={errors.email}>
               <Input
-                placeholder="Password"
+                placeholder="Mật khẩu"
                 background={('brand.100')}
                 type="password"
                 size="lg"
                 mt={6}
                 {...register("password", {
-                  required: "This is required field",
+                  required: "Mật khẩu bắt buộc nhập",
                   minLength: {
                     value: 5,
-                    message: "Password must be at least 5 characters long",
+                    message: "Mật khẩu phải có ít nhất 5 ký tự",
                   },
-                  maxLength: {
-                    value: 24,
-                    message: "Password must be at most 24 characters",
-                  },
+                  
                 })}
               />
               <FormErrorMessage>
@@ -116,13 +113,14 @@ export const Register = () => {
             </FormControl>
             <Button
               type="submit"
+              colorScheme='brand'
               isLoading={isSubmitting}
               loadingText="Creating account..."
               width="100%"
               bg="brand.300"
               _hover={{ bg: "brand.500" }} mt={3} mb={2}
             >
-              Register
+              Đăng ký
             </Button>
           </form>
           <Button
@@ -130,7 +128,7 @@ export const Register = () => {
             width="100%"
             colorScheme='brand' textColor='brand.700' variant='link' mb={2}
           >
-            Login Instead
+            Hoặc đăng nhập
           </Button>
           <Button
           leftIcon={<FiHome />}
@@ -138,7 +136,7 @@ export const Register = () => {
           bg="brand.300"
           _hover={{ bg: "brand.500" }}
           onClick={() => navigate('/')}
-        >Back to Home</Button>
+        >Về trang chủ</Button>
         </Flex>
       </Flex>
     );

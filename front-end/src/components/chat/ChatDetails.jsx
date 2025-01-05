@@ -292,7 +292,7 @@ const ChatDetail = () => {
               variant="outline"
               onClick={handleNewSessionClick}
             >
-              New
+              Chat mới
             </Button>
             <Button
               size="sm"
@@ -342,6 +342,7 @@ const ChatDetail = () => {
             fontSize="2xl" 
             fontWeight="bold" 
             color={colorMode === 'light' ? 'gray.800' : 'white'}
+            p={4}
           >
             🪄 Lumos
           </Text>
@@ -405,7 +406,7 @@ const ChatDetail = () => {
               <Input
                 flex="1"
                 variant="unstyled"
-                placeholder="Type your message..."
+                placeholder="Nhập tin nhắn..."
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 onKeyPress={(e) => e.key === "Enter" && sendMessage()}
@@ -427,15 +428,15 @@ const ChatDetail = () => {
       <Modal isOpen={isNewSessionModalOpen} onClose={() => setIsNewSessionModalOpen(false)}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Create New Session</ModalHeader>
+          <ModalHeader>Tạo session mới</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <FormControl>
-              <FormLabel>Session Name</FormLabel>
+              <FormLabel>Tên session</FormLabel>
               <Input
                 value={newSessionName}
                 onChange={(e) => setNewSessionName(e.target.value)}
-                placeholder="Enter session name"
+                placeholder="Nhập tên session"
                 onKeyPress={(e) => {
                   if (e.key === 'Enter') {
                     handleCreateNewSession();
@@ -446,10 +447,10 @@ const ChatDetail = () => {
           </ModalBody>
           <ModalFooter>
             <Button variant="ghost" mr={3} onClick={() => setIsNewSessionModalOpen(false)}>
-              Cancel
+              Hủy
             </Button>
             <Button colorScheme="brand" onClick={handleCreateNewSession}>
-              Create
+              Tạo
             </Button>
           </ModalFooter>
         </ModalContent>

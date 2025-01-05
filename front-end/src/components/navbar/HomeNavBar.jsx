@@ -7,13 +7,13 @@ export const HomeNavBar = () => {
     const navigate = useNavigate()
   return (
     <Flex bg="brand.500" p={4} justify="space-between" color="white" rounded="md">
-    <Box fontWeight="bold" fontSize='2xl' >MentalHealth Website</Box>
+    <Box fontWeight="bold" fontSize='2xl'>Lumos 🪄</Box>
     <HStack spacing={4}>
         <Button leftIcon={<FiLogIn />} variant='ghost' colorScheme="White" onClick={() => navigate('/login')}>
-            Login
+            Đăng nhập
         </Button>
         <Button colorScheme="brand" onClick={() => navigate('/register')}>
-            Sign up 
+            Đăng ký
         </Button>
     </HStack>
     <Outlet/>
