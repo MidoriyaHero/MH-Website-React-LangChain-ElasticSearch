@@ -385,8 +385,7 @@ const ChatDetail = () => {
             <Flex
               position="fixed"
               bottom={6}
-              left="37%"
-              right={6}
+              w="65%"
               p={4}
               bg={colorMode === 'light' ? 'white' : 'gray.800'}
               borderRadius="full"

@@ -77,3 +77,17 @@ async def get_questionnaire_response(
     if not response:
         raise HTTPException(status_code=404, detail="Response not found")
     return response 
+
+@questionnaire_router.delete("/response/{response_id}")
+async def delete_questionnaire_response(
+    response_id: UUID,
+    current_user: User = Depends(get_current_user)
+):
+    """Delete specific questionnaire response"""
+    deleted = await QuestionnaireService.delete_questionnaire_response(
+        current_user,
+        response_id
+    )
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Response not found")
+    return {"message": "Response deleted successfully"} 

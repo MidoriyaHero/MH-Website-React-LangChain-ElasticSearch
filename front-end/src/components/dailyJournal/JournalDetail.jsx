@@ -164,7 +164,7 @@ export const JournalDetail = ({ journalId, onUpdate }) => {
                 onClick={delJournal} 
                 _hover={{ bg: 'red.600' }}
             >
-                Delete
+                Xóa
             </Button>
         </Container>
     )

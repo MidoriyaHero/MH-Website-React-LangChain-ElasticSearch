@@ -23,11 +23,14 @@ import {
   Tab,
   TabPanels,
   TabPanel,
+  useColorMode,
 } from '@chakra-ui/react';
 import { useForm, Controller } from 'react-hook-form';
 import axiosInstance from '../../services/axios';
 import { useNavigate } from 'react-router-dom';
 import { LeftNav } from '../navbar/LeftNav';
+import { FiTrash2 } from 'react-icons/fi';
+import { motion } from 'framer-motion';
 
 
 const Questionnaire = () => {
@@ -39,6 +42,15 @@ const Questionnaire = () => {
   const { handleSubmit: handleGad7Submit, control: gad7Control, reset: resetGad7 } = useForm();
   const { handleSubmit: handlePhq9Submit, control: phq9Control, reset: resetPhq9 } = useForm();
   const navigate = useNavigate();
+  const { colorMode } = useColorMode();
+
+  const questionStyle = {
+    fontSize: '1.1rem',
+    fontWeight: '500',
+    lineHeight: '1.6',
+    letterSpacing: '0.01em',
+    color: colorMode === 'light' ? 'gray.700' : 'gray.100',
+  };
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -149,6 +161,27 @@ const Questionnaire = () => {
     });
   };
 
+  const handleDelete = async (responseId) => {
+    try {
+      await axiosInstance.delete(`/questionnaire/questionnaire/response/${responseId}`);
+      toast({
+        title: 'Xóa thành công',
+        status: 'success',
+        duration: 2000,
+        isClosable: true,
+      });
+      fetchHistory();
+    } catch (error) {
+      toast({
+        title: 'Xóa thất bại',
+        description: error.response?.data?.detail || "Vui lòng thử lại",
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
   if (loading) {
     return (
       <Flex justify="center" align="center" height="100vh">
@@ -159,15 +192,23 @@ const Questionnaire = () => {
 
   return (
     <Flex>
-      <Box w="15%">
+      <Box w="20%">
         <LeftNav />
       </Box>
 
-      <Box w="50%" p={6}>
-        <Tabs isFitted variant="enclosed">
+      <Box w="45%" p={6}>
+        <Tabs 
+          isFitted 
+          variant="soft-rounded" 
+          colorScheme="brand"
+          bg={colorMode === 'light' ? 'white' : 'gray.800'}
+          p={4}
+          borderRadius="xl"
+          boxShadow="sm"
+        >
           <TabList mb="1em">
-            <Tab>GAD-7 (Lo âu)</Tab>
-            <Tab>PHQ-9 (Trầm cảm)</Tab>
+            <Tab _selected={{ bg: 'brand.500', color: 'white' }}>GAD-7 (Lo âu)</Tab>
+            <Tab _selected={{ bg: 'brand.500', color: 'white' }}>PHQ-9 (Trầm cảm)</Tab>
           </TabList>
 
           <TabPanels>
@@ -176,8 +217,17 @@ const Questionnaire = () => {
               <form onSubmit={handleGad7Submit(onGad7Submit)}>
                 <Stack spacing={8}>
                   {gad7Questions.map((question, index) => (
-                    <FormControl key={index} isRequired>
-                      <FormLabel mb={4} color="brand.600">
+                    <FormControl 
+                      key={index} 
+                      isRequired
+                      as={motion.div}
+                      whileHover={{ scale: 1.01 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <FormLabel 
+                        mb={4} 
+                        sx={questionStyle}
+                      >
                         {index + 1}. {question}
                       </FormLabel>
                       <Controller
@@ -187,7 +237,11 @@ const Questionnaire = () => {
                         rules={{ required: "Câu hỏi này là bắt buộc" }}
                         render={({ field }) => (
                           <RadioGroup {...field}>
-                            <Stack direction="row" spacing={4}>
+                            <Stack 
+                              direction={{ base: "column", md: "row" }} 
+                              spacing={4}
+                              mt={2}
+                            >
                               <Radio value="0">Không có</Radio>
                               <Radio value="1">Vài ngày</Radio>
                               <Radio value="2">Hơn nửa số ngày</Radio>
@@ -210,8 +264,17 @@ const Questionnaire = () => {
               <form onSubmit={handlePhq9Submit(onPhq9Submit)}>
                 <Stack spacing={8}>
                   {phq9Questions.map((question, index) => (
-                    <FormControl key={index} isRequired>
-                      <FormLabel mb={4} color="brand.600">
+                    <FormControl 
+                      key={index} 
+                      isRequired
+                      as={motion.div}
+                      whileHover={{ scale: 1.01 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <FormLabel 
+                        mb={4} 
+                        sx={questionStyle}
+                      >
                         {index + 1}. {question}
                       </FormLabel>
                       <Controller
@@ -221,7 +284,11 @@ const Questionnaire = () => {
                         rules={{ required: "Câu hỏi này là bắt buộc" }}
                         render={({ field }) => (
                           <RadioGroup {...field}>
-                            <Stack direction="row" spacing={4}>
+                            <Stack 
+                              direction={{ base: "column", md: "row" }} 
+                              spacing={4}
+                              mt={2}
+                            >
                               <Radio value="0">Không có</Radio>
                               <Radio value="1">Vài ngày</Radio>
                               <Radio value="2">Hơn nửa số ngày</Radio>
@@ -242,7 +309,14 @@ const Questionnaire = () => {
         </Tabs>
       </Box>
 
-      <Box w="40%" p={6}>
+      <Box 
+        w="40%" 
+        p={6}
+        bg={colorMode === 'light' ? 'white' : 'gray.800'}
+        borderRadius="xl"
+        boxShadow="sm"
+        ml={4}
+      >
         <Heading size="md" mb={4} color="brand.600">Lịch sử đánh giá</Heading>
         <Box overflowX="auto">
           <Table variant="simple">
@@ -252,22 +326,43 @@ const Questionnaire = () => {
                 <Th>Loại</Th>
                 <Th>Điểm</Th>
                 <Th>Mức độ</Th>
+                <Th></Th>
               </Tr>
             </Thead>
             <Tbody>
               {history.map((result) => (
-                <Tr key={result.response_id}>
+                <Tr 
+                  key={result.response_id}
+                  _hover={{ bg: colorMode === 'light' ? 'gray.50' : 'gray.700' }}
+                >
                   <Td>{formatDate(result.timestamp)}</Td>
                   <Td>{result.questionnaire_type}</Td>
-                  <Td>{result.total_score}</Td>
+                  <Td>
+                    <Badge colorScheme="purple" variant="subtle">
+                      {result.total_score}
+                    </Badge>
+                  </Td>
                   <Td>
                     <Badge
                       colorScheme={getSeverityColor(result.severity)}
                       p={2}
                       borderRadius="full"
+                      variant="solid"
                     >
                       {result.severity}
                     </Badge>
+                  </Td>
+                  <Td>
+                    <Button
+                      size="sm"
+                      colorScheme="red"
+                      variant="ghost"
+                      onClick={() => handleDelete(result.response_id)}
+                      icon={<FiTrash2 />}
+                      aria-label="Delete result"
+                    >
+                      <FiTrash2 />
+                    </Button>
                   </Td>
                 </Tr>
               ))}

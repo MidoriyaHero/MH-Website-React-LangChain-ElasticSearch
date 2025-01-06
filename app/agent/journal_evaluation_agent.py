@@ -96,23 +96,23 @@ class JournalEvaluationAgent:
             msg = MIMEMultipart()
             msg['From'] = sender_email
             msg['To'] = user.emergency_contact_email
-            msg['Subject'] = f"URGENT: Mental Health Alert for {user.user_name}"
+            msg['Subject'] = f"LUMOS-KHẨN CẤP: Thông báo vấn đề của {user.user_name}"
             
             # Prepare email body
             body = f"""
-            URGENT: Mental Health Alert
+KHẨN CẤP!!!
 
-            User: {user.user_name}
-            Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-            
-            Detected concerning content in user's journal:
+Người dùng: {user.user_name}
+Thời gian: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+
+Phát hiện một số biểu hiện tiêu cực:
             """
             
             for category, keywords in detected_keywords.items():
                 if keywords:
                     body += f"\n{category}:\n- {', '.join(keywords)}"
             
-            body += f"\n\nJournal Content:\n{journal_content}"
+            body += f"\n\nNhật ký:\n{journal_content}"
             
             msg.attach(MIMEText(body, 'plain'))
             

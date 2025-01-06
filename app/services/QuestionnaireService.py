@@ -26,7 +26,7 @@ class QuestionnaireService:
         severity = QuestionnaireService.calculate_gad7_severity(total_score)
 
         response = QuestionnaireResponse(
-            questionnaire_type="GAD-7",
+            questionnaire_type="GAD7",
             responses=responses,
             total_score=total_score,
             severity=severity,
@@ -85,3 +85,19 @@ class QuestionnaireService:
         )
         await response.insert()
         return response 
+
+    @staticmethod
+    async def delete_questionnaire_response(
+        user: User,
+        response_id: UUID
+    ) -> bool:
+        """Delete a questionnaire response"""
+        result = await QuestionnaireResponse.find_one(
+            QuestionnaireResponse.response_id == response_id,
+            QuestionnaireResponse.owner.id == user.id
+        )
+        if not result:
+            return False
+        
+        await result.delete()
+        return True 
