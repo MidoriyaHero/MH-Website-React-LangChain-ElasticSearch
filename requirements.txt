@@ -1,17 +1,9 @@
 langchain
 python-dotenv
-google.generativeai
 langchain-google-genai
-langchain-elasticsearch
-langchain-openai
-numexpr
-wikipedia
+langchain-openai    
 langchain_community
-langchain-mongodb
 langchain_core
-rapidocr_onnxruntime
-arxiv
-pypdf
 fastapi
 pymongo[srv]
 python-multipart
@@ -23,3 +15,4 @@ pydantic[email]
 pydantic-settings
 pytest 
 pytest-asyncio
+uvicorn[standard]
