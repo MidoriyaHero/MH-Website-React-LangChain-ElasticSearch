@@ -291,6 +291,7 @@ const ChatDetail = () => {
               colorScheme="green"
               variant="outline"
               onClick={handleNewSessionClick}
+              ml={4}
             >
               Chat mới
             </Button>

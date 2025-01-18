@@ -83,7 +83,7 @@ class ChatService:
             raise Exception("Session not found")
             
         # Initialize agent with user context
-        llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+        llm = ChatOpenAI(model="gpt-4o", temperature=0)
         agent = PersonalizedChatAgent(llm,user)
         
         # Get user context
