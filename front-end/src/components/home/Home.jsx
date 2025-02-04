@@ -35,6 +35,9 @@ const Home = () => {
             Viết Nhật Ký
           </Button>
         </HStack>
+        <Text fontSize="lg" color='brand.700' mb={6} mt={6}>
+          (vui lòng sử dụng trình duyệt web để có trải nghiệm tốt nhất)
+        </Text>
       </Flex>
 
       {/* Features Section */}

@@ -24,6 +24,12 @@ import {
   TabPanels,
   TabPanel,
   useColorMode,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
 } from '@chakra-ui/react';
 import { useForm, Controller } from 'react-hook-form';
 import axiosInstance from '../../services/axios';
@@ -43,6 +49,9 @@ const Questionnaire = () => {
   const { handleSubmit: handlePhq9Submit, control: phq9Control, reset: resetPhq9 } = useForm();
   const navigate = useNavigate();
   const { colorMode } = useColorMode();
+  const [isWarningOpen, setIsWarningOpen] = useState(false);
+  const [warningMessage, setWarningMessage] = useState('');
+  const cancelRef = React.useRef();
 
   const questionStyle = {
     fontSize: '1.1rem',
@@ -100,6 +109,11 @@ const Questionnaire = () => {
     const responses = Object.values(data).map(Number);
     try {
       const response = await axiosInstance.post('/questionnaire/questionnaire/gad7/submit', { responses });
+      if (response.data.total_score > 14) {
+        setWarningMessage(`Điểm của bạn là ${response.data.total_score}, mức độ ${response.data.severity}. Vui lòng xem xét việc gặp chuyên gia.`);
+        setIsWarningOpen(true);
+      }
+
       toast({
         title: 'Đánh giá thành công',
         description: `Tổng điểm của bạn là ${response.data.total_score} (${response.data.severity})`,
@@ -124,6 +138,11 @@ const Questionnaire = () => {
     const responses = Object.values(data).map(Number);
     try {
       const response = await axiosInstance.post('/questionnaire/questionnaire/phq9/submit', { responses });
+      if (response.data.total_score > 14) {
+        setWarningMessage(`Điểm của bạn là ${response.data.total_score}, mức độ ${response.data.severity}. Vui lòng xem xét việc gặp chuyên gia.`);
+        setIsWarningOpen(true);
+      }
+
       toast({
         title: 'Đánh giá thành công',
         description: `Tổng điểm của bạn là ${response.data.total_score} (${response.data.severity})`,
@@ -370,6 +389,27 @@ const Questionnaire = () => {
           </Table>
         </Box>
       </Box>
+      <AlertDialog
+        isOpen={isWarningOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={() => setIsWarningOpen(false)}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Cảnh báo
+            </AlertDialogHeader>
+            <AlertDialogBody>
+              {warningMessage}
+            </AlertDialogBody>
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={() => setIsWarningOpen(false)}>
+                Đóng
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </Flex>
   );
 };

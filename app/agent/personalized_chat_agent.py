@@ -8,7 +8,19 @@ class ContextManager:
         self.questionnaire_history = []
         self.daily_journals = []
         self.chat_history = []
-    
+        self.last_recommendation_time = None  # Track the last recommendation time
+        self.recommendation_threshold = timedelta(hours=6)  # Minimum interval between recommendations
+
+    def can_recommend(self) -> bool:
+        """Check if it's allowed to recommend based on the last recommendation time."""
+        if not self.last_recommendation_time:
+            return True
+        return datetime.now() - self.last_recommendation_time >= self.recommendation_threshold
+
+    def update_recommendation_time(self):
+        """Update the last recommendation time to the current time."""
+        self.last_recommendation_time = datetime.now()
+
     def get_latest_gad7_score(self) -> Optional[dict]:
         gad7_responses = [q for q in self.questionnaire_history if q.questionnaire_type == "GAD7"]
         if not gad7_responses:
@@ -51,24 +63,27 @@ class PersonalizedChatAgent:
         
         self.chat_prompt = ChatPromptTemplate.from_messages([
             ("system", """
-            Bạn là trợ lý hỗ trợ sức khỏe tâm thần. Bạn chỉ có kiến thức về lĩnh vực tâm lý và các phương pháp hỗ trợ tâm lý. Khi được hỏi về các lĩnh vực khác hãy trả lời "Tôi không biết về lĩnh vực đó".
-            Mục tiêu của bạn là phản hồi với sự đồng cảm, thấu hiểu và lời khuyên thực tế và đề xuất các hành động hoặc nguồn lực tích cực. 
-            Duy trì giọng điệu thân thiện, chuyên nghiệp và không được phán xét. 
-            đây là tóm tắt của 3 nhật ký gần nhất (có thể so sánh ngày trong nhật ký với hôm nay: {today}) {emotional_context}. bạn có thể dựa vào đây để đưa lời khuyên hoăc giải pháp tích cực. Tránh chẩn đoán hoặc kê đơn điều trị, mà hãy hướng dẫn nhẹ nhàng.
-            khi 'điểm đánh giá lo âu/trầm cảm' vượt quá 14 hoặc trong 'cảm xúc'/ 'từ khóa' tóm tắt từ nhật ký có các triệu chứng tiêu cực nặng nề. LẬP TỨC đề cập tới vấn đề họ đang đối mặt và đề xuất các đường dây nóng: 115 hoặc 1900 1267 và yêu cầu người dùng tìm sự giúp đỡ.
-            ### Thông tin người dùng:
-            - Tên: {user_name}
-            - Các đề xuất cần thiết: {recommendations}
-            - Nội dung cuộc trò chuyện trước đó: {chat_history}
+            Bạn là trợ lý hỗ trợ sức khỏe tâm thần. Bạn chỉ có kiến thức về lĩnh vực tâm lý/tâm thần và các phương pháp hỗ trợ tâm lý, cũng như cách để làm người dùng cảm thấy thoải mái. Khi được hỏi về các lĩnh vực khác, hãy trả lời "Tôi không biết về lĩnh vực đó." Tuy nhiên, nếu có thể làm người dùng thoải mái hoặc cảm thấy tốt hơn, hãy giúp họ.
 
-            ### Hướng dẫn:
-            **trích nguồn:** Khi đưa ra bất kỳ lời khuyên hoặc gợi ý có thể giúp giảm triệu chứng, bắt buộc phải bao gồm nguồn thông tin rõ ràng. ví dụ: **[Theo tổ chức y tế thế giới WHO]: bạn nên...**
-            **đề xuất:** khi người dùng cảm thấy không ổn có thể đề xuất họ dựa trên đề xuất cần thiết.
-            **Thông tin từ trạng thái cảm xúc:** tham khảo và kết nối thông tin từ "Trạng thái cảm xúc gần đây" của họ để cá nhân hóa câu trả lời. 
-            **Ngôn ngữ:** Luôn trả lời bằng tiếng Việt và điều chỉnh phong cách phù hợp với lứa tuổi thanh thiếu niên.
-            **Thời gian hiện tại:** Bao gồm thông tin hôm nay là ngày {today} để cá nhân hóa tương tác.
-            Trả lời ngắn gọn nhất có thể.
-            Gọi người dùng bằng tên của họ khi phù hợp để tạo sự thân mật.
+            Mục tiêu của bạn là phản hồi với sự đồng cảm, thấu hiểu, và lời khuyên thực tế, đề xuất các hành động hoặc nguồn lực tích cực. Duy trì giọng điệu thân thiện, chuyên nghiệp và không phán xét. 
+
+            Dựa vào nhật ký cảm xúc gần nhất (có thể so sánh ngày trong nhật ký với hôm nay: {today}) {emotional_context}, bạn có thể đưa ra lời khuyên hoặc giải pháp tích cực. Tránh chẩn đoán hoặc kê đơn điều trị, mà hãy hướng dẫn nhẹ nhàng.
+
+            Khi 'điểm đánh giá lo âu/trầm cảm' vượt quá 14 hoặc trong 'cảm xúc'/ 'từ khóa' tóm tắt từ nhật ký có các triệu chứng tiêu cực nặng nề, lập tức đề cập đến vấn đề họ đang đối mặt và đề xuất các đường dây nóng: 115 hoặc 1900 1267, yêu cầu người dùng tìm sự giúp đỡ.
+
+            Thông tin người dùng:
+            Tên: {user_name}
+            Các đề xuất cần thiết: {recommendations}
+            Nội dung cuộc trò chuyện trước đó: {chat_history}
+
+            Hướng dẫn:
+            Cách trả lời: Tránh lặp lại câu trả lời để không gây cảm giác nhàm chán cho người dùng. Hãy thêm chi tiết mới và liên quan đến tình huống hiện tại của người dùng, cố gắng hỏi han, trò chuyện với người dùng
+            Trích nguồn: Khi đưa ra bất kỳ lời khuyên hoặc gợi ý nào có thể giúp giảm triệu chứng, bắt buộc phải bao gồm nguồn thông tin rõ ràng. Ví dụ: [Theo tổ chức y tế thế giới WHO]: bạn nên...
+            Đề xuất: Khi người dùng cảm thấy không ổn, bạn có thể đề xuất dựa trên đề xuất cần thiết, nhưng không nên đề xuất liên tục. Hãy để đề xuất đến từ sự thấu hiểu tình huống thực tế của người dùng.
+            Thông tin từ trạng thái cảm xúc: Tham khảo và kết nối thông tin từ "Trạng thái cảm xúc gần đây" của họ để cá nhân hóa câu trả lời.
+            Ngôn ngữ: Luôn trả lời bằng tiếng Việt và điều chỉnh phong cách phù hợp với lứa tuổi thanh thiếu niên. Hãy sử dụng ngôn ngữ đời thường, gần gũi nhưng vẫn giữ sự chuyên nghiệp.
+            Trả lời ngắn gọn: Trả lời ngắn gọn nhưng đầy đủ ý, không kéo dài không cần thiết.
+            Gọi tên người dùng: Gọi người dùng bằng tên của họ khi phù hợp để tạo sự thân mật và kết nối.
                         """),
             ("user", """{query}""")
         ])
@@ -102,8 +117,10 @@ class PersonalizedChatAgent:
         return "\n".join(context)
     
     def _build_recommendations(self) -> str:
-        recommendations = []
+        if not self.context_manager.can_recommend():
+            return "Không có gợi ý."
         
+        recommendations = []
         if self.context_manager.should_recommend_journal():
             recommendations.append("Gợi ý viết nhật ký cảm xúc hôm nay. Theo Hiệp hội Tâm lý Hoa Kỳ (APA), viết nhật ký giúp giảm căng thẳng và cải thiện tâm trạng.")
             
@@ -112,8 +129,12 @@ class PersonalizedChatAgent:
         
         if self.context_manager.should_recommend_phq9():
             recommendations.append("Đề xuất làm bảng câu hỏi đánh giá trầm cảm. Theo khuyến nghị của Tổ chức Y tế Thế giới (WHO), việc đánh giá định kỳ giúp phát hiện sớm dấu hiệu trầm cảm.")
+
+        # Update the last recommendation time if recommendations are provided
+        if recommendations:
+            self.context_manager.update_recommendation_time()
         
-        return "\n".join(recommendations) if recommendations else "Không có đề xuất nào"
+        return "\n".join(recommendations) if recommendations else "Không có gợi ý."
 
     
     async def run(self, query: str) -> str:

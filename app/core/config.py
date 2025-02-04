@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     ALGORITHM: str = 'HS256'
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60*24*7
     REFRESH_TOKEN_EXPIRE_MINUTES: int = 60*24*7 # 7days
-    BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = ['http://localhost:3000']
+    BACKEND_CORS_ORIGINS: List[str] = ['http://localhost:3000','http://13.239.235.88']
     PROJECT_NAME: str = 'MENTALHEALTH APP'
 
     #Database 

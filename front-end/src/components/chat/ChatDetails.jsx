@@ -248,10 +248,10 @@ const ChatDetail = () => {
           bg={colorMode === 'light' ? 'white' : 'gray.800'}
         >
           <Text fontSize="2xl" mb={6} textAlign="center">
-            Welcome to Lumos Chat! 🪄
+            Chào mừng đến với Lumos Chat! 🪄
           </Text>
           <Text fontSize="lg" mb={8} textAlign="center" color="gray.600">
-            Create a new session or select an existing one to start chatting
+            Lumos chat có thể dùng thông tin từ nhật ký và kết quả test của bạn để đưa ra phản hồi phù hợp hơn!
           </Text>
           <Button
             colorScheme="brand"
@@ -259,7 +259,7 @@ const ChatDetail = () => {
             leftIcon={<FiPlus />}
             onClick={handleNewSessionClick}
           >
-            Create New Session
+            Tại session mới
           </Button>
         </Flex>
       );
@@ -291,6 +291,7 @@ const ChatDetail = () => {
               colorScheme="green"
               variant="outline"
               onClick={handleNewSessionClick}
+              ml={4}
             >
               Chat mới
             </Button>

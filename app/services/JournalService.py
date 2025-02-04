@@ -1,6 +1,6 @@
 from typing import List 
 from uuid import UUID
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from app.models.UserModel import User
 from app.models.JournalModel import DailyJournal
@@ -30,7 +30,8 @@ class JournalService:
             journal.emotions = evaluation.get("emotions", [])
             journal.themes = evaluation.get("themes", [])
             journal.is_evaluated = True
-            journal.last_evaluated_at = datetime.now()
+            journal.last_evaluated_at = datetime.now() + timedelta(hours=7)
+
         return await journal.insert()
     
     @staticmethod
@@ -50,7 +51,7 @@ class JournalService:
             data.emotions = evaluation.get("emotions", [])
             data.themes = evaluation.get("themes", [])
             data.is_evaluated = True
-            data.last_evaluated_at = datetime.now()
+            data.last_evaluated_at = datetime.now() + timedelta(hours=7)
         print(data)
         await journal.update({"$set": data.model_dump(exclude_unset=True)})
         await journal.save()
