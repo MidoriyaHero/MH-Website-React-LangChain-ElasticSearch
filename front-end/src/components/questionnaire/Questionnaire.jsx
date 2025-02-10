@@ -30,13 +30,20 @@ import {
   AlertDialogHeader,
   AlertDialogContent,
   AlertDialogOverlay,
+  useBreakpointValue,
+  IconButton,
+  Drawer,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerCloseButton,
+  DrawerBody,
 } from '@chakra-ui/react';
 import { useForm, Controller } from 'react-hook-form';
 import axiosInstance from '../../services/axios';
-import { useNavigate } from 'react-router-dom';
 import { LeftNav } from '../navbar/LeftNav';
 import { FiTrash2 } from 'react-icons/fi';
 import { motion } from 'framer-motion';
+import { HamburgerIcon, ViewIcon } from '@chakra-ui/icons';
 
 
 const Questionnaire = () => {
@@ -47,19 +54,27 @@ const Questionnaire = () => {
   const toast = useToast();
   const { handleSubmit: handleGad7Submit, control: gad7Control, reset: resetGad7 } = useForm();
   const { handleSubmit: handlePhq9Submit, control: phq9Control, reset: resetPhq9 } = useForm();
-  const navigate = useNavigate();
   const { colorMode } = useColorMode();
   const [isWarningOpen, setIsWarningOpen] = useState(false);
   const [warningMessage, setWarningMessage] = useState('');
   const cancelRef = React.useRef();
+  const [isNavOpen, setIsNavOpen] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  
+  const isMobile = useBreakpointValue({ base: true, lg: false });
+  const mainWidth = isMobile ? "100%" : "45%";
 
   const questionStyle = {
-    fontSize: '1.1rem',
+    fontSize: { base: '1rem', md: '1.1rem' },
     fontWeight: '500',
     lineHeight: '1.6',
     letterSpacing: '0.01em',
     color: colorMode === 'light' ? 'gray.700' : 'gray.100',
   };
+
+  const headingSize = useBreakpointValue({ base: "md", md: "lg" });
+  const containerPadding = useBreakpointValue({ base: 3, md: 6 });
+  const stackSpacing = useBreakpointValue({ base: 4, md: 8 });
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -210,31 +225,69 @@ const Questionnaire = () => {
   }
 
   return (
-    <Flex>
-      <Box w="20%">
-        <LeftNav />
-      </Box>
+    <Flex position="relative">
+      {isMobile && (
+        <IconButton
+          icon={<HamburgerIcon />}
+          position="fixed"
+          top={4}
+          left={4}
+          zIndex={20}
+          onClick={() => setIsNavOpen(true)}
+          aria-label="Open navigation"
+        />
+      )}
 
-      <Box w="45%" p={6}>
+      {isMobile ? (
+        <Drawer isOpen={isNavOpen} placement="left" onClose={() => setIsNavOpen(false)}>
+          <DrawerOverlay />
+          <DrawerContent>
+            <DrawerCloseButton />
+            <DrawerBody p={0}>
+              <LeftNav isDrawer={true} />
+            </DrawerBody>
+          </DrawerContent>
+        </Drawer>
+      ) : (
+        <Box w="20%">
+          <LeftNav />
+        </Box>
+      )}
+
+      <Box w={mainWidth} p={containerPadding} ml={isMobile ? 0 : undefined} mt={isMobile ? 12 : 0}>
+        {isMobile && (
+          <IconButton
+            icon={<ViewIcon />}
+            position="fixed"
+            top={4}
+            right={4}
+            zIndex={20}
+            onClick={() => setIsHistoryOpen(true)}
+            aria-label="View history"
+          />
+        )}
+
         <Tabs 
           isFitted 
           variant="soft-rounded" 
           colorScheme="brand"
           bg={colorMode === 'light' ? 'white' : 'gray.800'}
-          p={4}
+          p={{ base: 2, md: 4 }}
           borderRadius="xl"
           boxShadow="sm"
         >
           <TabList mb="1em">
-            <Tab _selected={{ bg: 'brand.500', color: 'white' }}>GAD-7 (Lo âu)</Tab>
-            <Tab _selected={{ bg: 'brand.500', color: 'white' }}>PHQ-9 (Trầm cảm)</Tab>
+            <Tab fontSize={{ base: "sm", md: "md" }}>GAD-7 (Lo âu)</Tab>
+            <Tab fontSize={{ base: "sm", md: "md" }}>PHQ-9 (Trầm cảm)</Tab>
           </TabList>
 
           <TabPanels>
             <TabPanel>
-              <Heading mb={6} color="brand.700" size="lg">Đánh giá mức độ lo âu (GAD-7)</Heading>
+              <Heading mb={4} color="brand.700" size={headingSize}>
+                Đánh giá mức độ lo âu (GAD-7)
+              </Heading>
               <form onSubmit={handleGad7Submit(onGad7Submit)}>
-                <Stack spacing={8}>
+                <Stack spacing={stackSpacing}>
                   {gad7Questions.map((question, index) => (
                     <FormControl 
                       key={index} 
@@ -279,9 +332,11 @@ const Questionnaire = () => {
             </TabPanel>
 
             <TabPanel>
-              <Heading mb={6} color="brand.700" size="lg">Đánh giá mức độ trầm cảm (PHQ-9)</Heading>
+              <Heading mb={4} color="brand.700" size={headingSize}>
+                Đánh giá mức độ trầm cảm (PHQ-9)
+              </Heading>
               <form onSubmit={handlePhq9Submit(onPhq9Submit)}>
-                <Stack spacing={8}>
+                <Stack spacing={stackSpacing}>
                   {phq9Questions.map((question, index) => (
                     <FormControl 
                       key={index} 
@@ -328,67 +383,139 @@ const Questionnaire = () => {
         </Tabs>
       </Box>
 
-      <Box 
-        w="40%" 
-        p={6}
-        bg={colorMode === 'light' ? 'white' : 'gray.800'}
-        borderRadius="xl"
-        boxShadow="sm"
-        ml={4}
-      >
-        <Heading size="md" mb={4} color="brand.600">Lịch sử đánh giá</Heading>
-        <Box overflowX="auto">
-          <Table variant="simple">
-            <Thead>
-              <Tr>
-                <Th>Ngày</Th>
-                <Th>Loại</Th>
-                <Th>Điểm</Th>
-                <Th>Mức độ</Th>
-                <Th></Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {history.map((result) => (
-                <Tr 
-                  key={result.response_id}
-                  _hover={{ bg: colorMode === 'light' ? 'gray.50' : 'gray.700' }}
-                >
-                  <Td>{formatDate(result.timestamp)}</Td>
-                  <Td>{result.questionnaire_type}</Td>
-                  <Td>
-                    <Badge colorScheme="purple" variant="subtle">
-                      {result.total_score}
-                    </Badge>
-                  </Td>
-                  <Td>
-                    <Badge
-                      colorScheme={getSeverityColor(result.severity)}
-                      p={2}
-                      borderRadius="full"
-                      variant="solid"
-                    >
-                      {result.severity}
-                    </Badge>
-                  </Td>
-                  <Td>
-                    <Button
-                      size="sm"
-                      colorScheme="red"
-                      variant="ghost"
-                      onClick={() => handleDelete(result.response_id)}
-                      icon={<FiTrash2 />}
-                      aria-label="Delete result"
-                    >
-                      <FiTrash2 />
-                    </Button>
-                  </Td>
+      {isMobile ? (
+        <Drawer
+          isOpen={isHistoryOpen}
+          placement="right"
+          onClose={() => setIsHistoryOpen(false)}
+          size="full"
+        >
+          <DrawerOverlay />
+          <DrawerContent>
+            <DrawerCloseButton />
+            <DrawerBody
+              bg={colorMode === 'light' ? 'white' : 'gray.800'}
+              p={6}
+            >
+              <Heading size="md" mb={4} color="brand.600">Lịch sử đánh giá</Heading>
+              <Box overflowX="auto">
+                <Table variant="simple">
+                  <Thead>
+                    <Tr>
+                      <Th>Ngày</Th>
+                      <Th>Loại</Th>
+                      <Th>Điểm</Th>
+                      <Th>Mức độ</Th>
+                      <Th></Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {history.map((result) => (
+                      <Tr 
+                        key={result.response_id}
+                        _hover={{ bg: colorMode === 'light' ? 'gray.50' : 'gray.700' }}
+                      >
+                        <Td>{formatDate(result.timestamp)}</Td>
+                        <Td>{result.questionnaire_type}</Td>
+                        <Td>
+                          <Badge colorScheme="purple" variant="subtle">
+                            {result.total_score}
+                          </Badge>
+                        </Td>
+                        <Td>
+                          <Badge
+                            colorScheme={getSeverityColor(result.severity)}
+                            p={2}
+                            borderRadius="full"
+                            variant="solid"
+                          >
+                            {result.severity}
+                          </Badge>
+                        </Td>
+                        <Td>
+                          <Button
+                            size="sm"
+                            colorScheme="red"
+                            variant="ghost"
+                            onClick={() => handleDelete(result.response_id)}
+                            icon={<FiTrash2 />}
+                            aria-label="Delete result"
+                          >
+                            <FiTrash2 />
+                          </Button>
+                        </Td>
+                      </Tr>
+                    ))}
+                  </Tbody>
+                </Table>
+              </Box>
+            </DrawerBody>
+          </DrawerContent>
+        </Drawer>
+      ) : (
+        <Box 
+          w="35%" 
+          p={6}
+          bg={colorMode === 'light' ? 'white' : 'gray.800'}
+          borderRadius="xl"
+          boxShadow="sm"
+          ml={4}
+        >
+          <Heading size="md" mb={4} color="brand.600">Lịch sử đánh giá</Heading>
+          <Box overflowX="auto">
+            <Table variant="simple">
+              <Thead>
+                <Tr>
+                  <Th>Ngày</Th>
+                  <Th>Loại</Th>
+                  <Th>Điểm</Th>
+                  <Th>Mức độ</Th>
+                  <Th></Th>
                 </Tr>
-              ))}
-            </Tbody>
-          </Table>
+              </Thead>
+              <Tbody>
+                {history.map((result) => (
+                  <Tr 
+                    key={result.response_id}
+                    _hover={{ bg: colorMode === 'light' ? 'gray.50' : 'gray.700' }}
+                  >
+                    <Td>{formatDate(result.timestamp)}</Td>
+                    <Td>{result.questionnaire_type}</Td>
+                    <Td>
+                      <Badge colorScheme="purple" variant="subtle">
+                        {result.total_score}
+                      </Badge>
+                    </Td>
+                    <Td>
+                      <Badge
+                        colorScheme={getSeverityColor(result.severity)}
+                        p={2}
+                        borderRadius="full"
+                        variant="solid"
+                      >
+                        {result.severity}
+                      </Badge>
+                    </Td>
+                    <Td>
+                      <Button
+                        size="sm"
+                        colorScheme="red"
+                        variant="ghost"
+                        onClick={() => handleDelete(result.response_id)}
+                        icon={<FiTrash2 />}
+                        aria-label="Delete result"
+                      >
+                        <FiTrash2 />
+                      </Button>
+                    </Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+          </Box>
         </Box>
-      </Box>
+      )}
+
       <AlertDialog
         isOpen={isWarningOpen}
         leastDestructiveRef={cancelRef}

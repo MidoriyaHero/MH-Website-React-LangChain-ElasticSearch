@@ -18,6 +18,7 @@ import {
   ModalCloseButton,
   FormControl,
   FormLabel,
+  IconButton,
 } from "@chakra-ui/react";
 import { renderMarkdownResponse } from '../../utils/markdown';
 import { FiPlus, FiRefreshCw, FiTrash } from 'react-icons/fi';
@@ -26,6 +27,8 @@ import { motion } from "framer-motion";
 import { BsFillEmojiSmileFill, BsSend, BsImageFill } from "react-icons/bs";
 import { LeftNav } from '../navbar/LeftNav';
 import { useColorMode } from '@chakra-ui/react';
+import { HamburgerIcon } from '@chakra-ui/icons';
+import { useBreakpointValue, Drawer, DrawerOverlay, DrawerContent, DrawerCloseButton, DrawerBody } from '@chakra-ui/react';
 
 const ChatDetail = () => {
   const { sessionId } = useParams();
@@ -41,17 +44,25 @@ const ChatDetail = () => {
   const [showEmojis, setShowEmojis] = useState(false);
   const [isNewSessionModalOpen, setIsNewSessionModalOpen] = useState(false);
   const [newSessionName, setNewSessionName] = useState("");
+  const [isNavOpen, setIsNavOpen] = useState(false);
+  const [isSessionsOpen, setIsSessionsOpen] = useState(false);
+  
+  // Add responsive breakpoints
+  const isMobile = useBreakpointValue({ base: true, lg: false });
 
-  // Add new message container styles
+  // Modify the layout sections with responsive widths
+  const leftNavWidth = isMobile ? "0" : "15%";
+  const sessionsWidth = isMobile ? "0" : "20%";
+  const chatWidth = isMobile ? "100%" : "65%";
+
+  // Update message container styles
   const messageContainerStyle = {
-    background: colorMode === 'light' ? 'white' : 'gray.800',
-    borderRadius: '20px',
-    boxShadow: 'lg',
-    p: 6,
-    mb: 4,
-    height: 'calc(100vh - 180px)',
+    flex: 1,
     overflowY: 'auto',
-    scrollBehavior: 'smooth'
+    height: '100%',
+    px: 4,
+    py: 2,
+    scrollBehavior: 'smooth',
   };
 
   // Message bubble animations
@@ -269,91 +280,212 @@ const ChatDetail = () => {
 
   return (
     <Flex height="100vh">
-      {/* Left Navigation */}
-      <Box w="15%">
-        <LeftNav />
-      </Box>
+      {/* Mobile Navigation Buttons */}
+      {isMobile && (
+        <>
+          <IconButton
+            icon={<HamburgerIcon />}
+            position="fixed"
+            top={4}
+            left={4}
+            zIndex={20}
+            onClick={() => setIsNavOpen(true)}
+            aria-label="Open navigation"
+          />
+          <Button
+            position="fixed"
+            top={4}
+            right={4}
+            zIndex={20}
+            onClick={() => setIsSessionsOpen(true)}
+            size="sm"
+            variant="solid"
+            colorScheme="brand"
+          >
+            Sessions
+          </Button>
+        </>
+      )}
 
-      {/* Sessions Sidebar - keep existing code */}
-      <Box 
-        w="20%" 
-        bg={colorMode === 'light' ? 'white' : 'gray.800'} 
-        borderRight="1px" 
-        borderColor={colorMode === 'light' ? 'gray.200' : 'gray.600'} 
-        p={4}
-      >
-        <Flex justify="space-between" align="center" mb={4}>
-          <Text fontSize="lg" fontWeight="bold">Sessions</Text>
-          <HStack spacing={2} >
-            <Button
-              size="sm"
-              leftIcon={<FiPlus />}
-              colorScheme="green"
-              variant="outline"
-              onClick={handleNewSessionClick}
-              ml={4}
+      {/* Left Navigation - Responsive */}
+      {isMobile ? (
+        <Drawer isOpen={isNavOpen} placement="left" onClose={() => setIsNavOpen(false)}>
+          <DrawerOverlay />
+          <DrawerContent>
+            <DrawerCloseButton />
+            <DrawerBody p={0}>
+              <LeftNav isDrawer={true} />
+            </DrawerBody>
+          </DrawerContent>
+        </Drawer>
+      ) : (
+        <Box w={leftNavWidth}>
+          <LeftNav />
+        </Box>
+      )}
+
+      {/* Sessions Sidebar - Responsive */}
+      {isMobile ? (
+        <Drawer isOpen={isSessionsOpen} placement="right" onClose={() => setIsSessionsOpen(false)}>
+          <DrawerOverlay />
+          <DrawerContent>
+            <DrawerCloseButton />
+            <DrawerBody
+              bg={colorMode === 'light' ? 'white' : 'gray.800'}
+              p={4}
             >
-              Chat mới
-            </Button>
-            <Button
-              size="sm"
-              leftIcon={<FiRefreshCw />}
-              colorScheme="blue"
-              variant="outline"
-              onClick={handleRefreshSessions} // Uses the new fetchSessions function
-            >
-              Refresh
-            </Button>
-          </HStack>
-        </Flex>
-        <VStack spacing={3} align="stretch">
-          {sessions.map((session) => (
-            <Flex key={session.session_id} align="center" justify="space-between">
+              {/* Sessions content */}
+              <Flex justify="space-between" align="center" marginTop={10} >
+                <Text fontSize="lg" fontWeight="bold" mr={2} >  Sessions </Text>
+                <HStack spacing={1} >
+                  <Button
+                    size="sm"
+                    leftIcon={<FiPlus />}
+                    colorScheme="green"
+                    variant="outline"
+                    onClick={handleNewSessionClick}
+                  >
+                    Chat mới
+                  </Button>
+                  <Button
+                    size="sm"
+                    leftIcon={<FiRefreshCw />}
+                    colorScheme="blue"
+                    variant="outline"
+                    onClick={handleRefreshSessions} // Uses the new fetchSessions function
+                  >
+                    Refresh
+                  </Button>
+                </HStack>
+              </Flex>
+              <VStack spacing={3} align="stretch">
+                {sessions.map((session) => (
+                  <Flex key={session.session_id} align="center" justify="space-between">
+                    <Button
+                      variant={session.session_id === sessionId ? "solid" : "ghost"}
+                      justifyContent="flex-start"
+                      onClick={() => navigate(`/service/chat/${session.session_id}`)}
+                      bg={session.session_id === sessionId ? "brand.400" : "transparent"}
+                      color={session.session_id === sessionId ? "white" : "black"}
+                      _hover={{ bg: "brand.300", color: "white" }}
+                      flex="1"
+                      marginTop={5}
+                    >
+                      {session.session_name}
+                    </Button>
+                    <Button
+                      size="sm"
+                      colorScheme="red"
+                      variant="ghost"
+                      onClick={() => handleDeleteSession(session.session_id)}
+                      ml={2}
+                      title="Delete Session"
+                    >
+                      <FiTrash />
+                    </Button>
+                  </Flex>
+                ))}
+              </VStack>
+            </DrawerBody>
+          </DrawerContent>
+        </Drawer>
+      ) : (
+        <Box w={sessionsWidth}>
+          <Flex justify="space-between" align="center" mt={10} mb={10}>
+            <Text fontSize="lg" fontWeight="bold" ml={2}>Sessions</Text>
+            <HStack spacing={2} >
               <Button
-                variant={session.session_id === sessionId ? "solid" : "ghost"}
-                justifyContent="flex-start"
-                onClick={() => navigate(`/service/chat/${session.session_id}`)}
-                bg={session.session_id === sessionId ? "brand.400" : "transparent"}
-                color={session.session_id === sessionId ? "white" : "black"}
-                _hover={{ bg: "brand.300", color: "white" }}
-                flex="1"
+                size="sm"
+                leftIcon={<FiPlus />}
+                colorScheme="green"
+                variant="outline"
+                onClick={handleNewSessionClick}
+                ml={4}
               >
-                {session.session_name}
+                Chat mới
               </Button>
               <Button
                 size="sm"
-                colorScheme="red"
-                variant="ghost"
-                onClick={() => handleDeleteSession(session.session_id)}
-                ml={2}
-                title="Delete Session"
+                leftIcon={<FiRefreshCw />}
+                colorScheme="blue"
+                variant="outline"
+                onClick={handleRefreshSessions} // Uses the new fetchSessions function
               >
-                <FiTrash />
+                Refresh
               </Button>
-            </Flex>
-          ))}
-        </VStack>
-      </Box>
+            </HStack>
+          </Flex>
+          <VStack spacing={3} align="stretch">
+            {sessions.map((session) => (
+              <Flex key={session.session_id} align="center" justify="space-between">
+                <Button
+                  variant={session.session_id === sessionId ? "solid" : "ghost"}
+                  justifyContent="flex-start"
+                  onClick={() => navigate(`/service/chat/${session.session_id}`)}
+                  bg={session.session_id === sessionId ? "brand.400" : "transparent"}
+                  color={session.session_id === sessionId ? "white" : "black"}
+                  _hover={{ bg: "brand.300", color: "white" }}
+                  flex="1"
+                >
+                  {session.session_name}
+                </Button>
+                <Button
+                  size="sm"
+                  colorScheme="red"
+                  variant="ghost"
+                  onClick={() => handleDeleteSession(session.session_id)}
+                  ml={2}
+                  title="Delete Session"
+                >
+                  <FiTrash />
+                </Button>
+              </Flex>
+            ))}
+          </VStack>
+        </Box>
+      )}
 
-      {/* Main Chat Area - modified */}
-      <Box w="65%" position="relative" height="100vh" overflow="hidden">
-        {/* Header - keep existing code */}
-        <Flex justify="space-between" align="center" mb={6} ml={4}>
+      {/* Main Chat Area */}
+      <Flex 
+        w={chatWidth} 
+        direction="column" 
+        height="100vh"
+        position="relative"
+      >
+        {/* Header */}
+        <Flex 
+          justify="space-between" 
+          align="center" 
+          p={4}
+          shrink={0} // Prevent header from shrinking
+          bg={colorMode === 'light' ? 'white' : 'gray.800'}
+          borderBottom="1px"
+          borderColor={colorMode === 'light' ? 'gray.200' : 'gray.700'}
+          position="sticky"
+          top={0}
+          zIndex={1}
+          ml={10}
+        >
           <Text 
             fontSize="2xl" 
             fontWeight="bold" 
             color={colorMode === 'light' ? 'gray.800' : 'white'}
-            p={4}
           >
             🪄 Lumos
           </Text>
         </Flex>
 
-        {/* Conditional Rendering */}
+        {/* Messages Area */}
         {!sessionId ? (
           renderInitialView()
         ) : (
-          <>
+          <Flex 
+            direction="column"
+            flex={1}
+            overflow="hidden" // Contains the scroll
+            position="relative"
+            pb="80px" // Space for input area
+          >
             {/* Messages Container */}
             <Box {...messageContainerStyle}>
               {messages.map((msg, index) => (
@@ -384,13 +516,14 @@ const ChatDetail = () => {
 
             {/* Input Area */}
             <Flex
-              position="fixed"
-              bottom={6}
-              w="65%"
+              position="absolute"
+              bottom={0}
+              left={0}
+              right={0}
               p={4}
               bg={colorMode === 'light' ? 'white' : 'gray.800'}
-              borderRadius="full"
-              boxShadow="lg"
+              borderTop="1px"
+              borderColor={colorMode === 'light' ? 'gray.200' : 'gray.700'}
               zIndex={2}
             >
               <Button
@@ -420,9 +553,9 @@ const ChatDetail = () => {
                 <BsSend />
               </Button>
             </Flex>
-          </>
+          </Flex>
         )}
-      </Box>
+      </Flex>
 
       {/* Keep existing Modal code */}
       <Modal isOpen={isNewSessionModalOpen} onClose={() => setIsNewSessionModalOpen(false)}>

@@ -53,8 +53,6 @@ export const LeftNav = () => {
 
   return (
     <Box
-      w="100%"
-      h="100vh"
       bg={colorMode === 'light' ? 'white' : 'gray.800'}
       p={4}
       borderRight="1px solid"

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState}  from 'react';
 import {
   Box,
   Flex,
@@ -14,17 +14,24 @@ import {
   FormErrorMessage,
   Divider,
   Text,
+  IconButton,
+  Drawer,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerCloseButton,
+  DrawerBody,
+  useBreakpointValue,
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../../hooks/useAuth';
 import { LeftNav } from '../navbar/LeftNav';
 import axiosInstance from '../../services/axios';
+import { HamburgerIcon } from '@chakra-ui/icons';
 
 const Settings = () => {
   const { user, setUser } = useAuth();
   const toast = useToast();
-  
-  // Initialize form with current values
+  const isMobile = useBreakpointValue({ base: true, lg: false });
   const { register, handleSubmit, formState: { errors } } = useForm({
     defaultValues: {
       user_name: user?.user_name || '',
@@ -33,7 +40,7 @@ const Settings = () => {
       emergency_contact_email: user?.emergency_contact_email || '',
     }
   });
-
+  const [isNavOpen, setIsNavOpen] = useState(false);
   const onSubmit = async (data) => {
     try {
       const updateData = {};
@@ -77,15 +84,50 @@ const Settings = () => {
   };
 
   return (
-    <Flex>
-      <Box w="15%">
-        <LeftNav />
-      </Box>
-      <Box flex="1" p={8}>
-        <Card maxW="800px" mx="auto" mt={8}>
-          <CardBody>
-            <VStack spacing={6} align="stretch">
-              <Heading size="lg" mb={6}>Cài đặt tài khoản</Heading>
+    <Flex direction={isMobile ? "column" : "row"}>
+      {isMobile && (
+        <IconButton
+          icon={<HamburgerIcon />}
+          position="fixed"
+          top={4}
+          left={4}
+          zIndex={20}
+          onClick={() => setIsNavOpen(true)}
+          aria-label="Open navigation"
+        />
+      )}
+
+      {isMobile ? (
+        <Drawer isOpen={isNavOpen} placement="left" onClose={() => setIsNavOpen(false)}>
+          <DrawerOverlay />
+          <DrawerContent>
+            <DrawerCloseButton />
+            <DrawerBody p={0}>
+              <LeftNav isDrawer={true} />
+            </DrawerBody>
+          </DrawerContent>
+        </Drawer>
+      ) : (
+        <Box w="15%">
+          <LeftNav />
+        </Box>
+      )}
+
+      <Box 
+        flex="1" 
+        p={{ base: 4, md: 8 }}
+        mt={isMobile ? 12 : 0}
+      >
+        <Card 
+          maxW={{ base: "100%", md: "800px" }} 
+          mx="auto" 
+          mt={{ base: 2, md: 8 }}
+        >
+          <CardBody p={{ base: 4, md: 6 }}>
+            <VStack spacing={{ base: 4, md: 6 }} align="stretch">
+              <Heading size={{ base: "md", md: "lg" }} mb={{ base: 4, md: 6 }}>
+                Cài đặt tài khoản
+              </Heading>
               <form onSubmit={handleSubmit(onSubmit)}>
                 <VStack spacing={4} align="stretch">
                   <FormControl isInvalid={errors.user_name}>
@@ -160,7 +202,7 @@ const Settings = () => {
                   <Button
                     type="submit"
                     colorScheme="brand"
-                    size="lg"
+                    size={{ base: "md", md: "lg" }}
                     w="100%"
                     mt={4}
                   >

@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react"
 import  axiosInstance  from '../../services/axios'
-import { Button, Center, Container, Spinner, Text, useToast, Tag, Wrap, WrapItem, Box } from "@chakra-ui/react"
+import { Button, Center, Container, Spinner, Text, useToast, Tag, Wrap, WrapItem, Box, Flex, useBreakpointValue } from "@chakra-ui/react"
 import { CRUDJournal } from "./CRUDJournal"
 
 export const JournalDetail = ({ journalId, onUpdate }) => {
     const [journal, setJournal] = useState({})
     const [loading, setLoading] = useState(true)
     const toast = useToast()
+    const isMobile = useBreakpointValue({ base: true, lg: false });
 
     useEffect(() => {
         if (!journalId) return;
@@ -73,10 +74,11 @@ export const JournalDetail = ({ journalId, onUpdate }) => {
         <Container
             bg='brand.200'
             minHeight="7rem"
-            p={3}
+            p={isMobile ? 4 : 3}
             rounded="lg"
             alignItems="center"
             justifyContent="space-between"
+            maxW={isMobile ? "100%" : "container.md"}
         >
             <Text fontSize={22}>{journal.title}</Text>
             <Text bg="brand.100" mt={2} p={2} rounded="lg">
@@ -105,7 +107,7 @@ export const JournalDetail = ({ journalId, onUpdate }) => {
                             <Text fontSize={16} fontWeight="semibold" mb={2}>
                                 Cảm xúc:
                             </Text>
-                            <Wrap mb={3}>
+                            <Wrap spacing={isMobile ? 2 : 3} justify={isMobile ? "center" : "flex-start"} mb={3}>
                                 {journal.emotions.map((emotion, index) => (
                                     <WrapItem key={index}>
                                         <Tag size="md" colorScheme="purple">
@@ -123,7 +125,7 @@ export const JournalDetail = ({ journalId, onUpdate }) => {
                             <Text fontSize={16} fontWeight="semibold" mb={2}>
                                 Từ khóa:
                             </Text>
-                            <Wrap mb={3}>
+                            <Wrap spacing={isMobile ? 2 : 3} justify={isMobile ? "center" : "flex-start"} mb={3}>
                                 {journal.themes.map((theme, index) => (
                                     <WrapItem key={index}>
                                         <Tag size="md" colorScheme="blue">
@@ -142,30 +144,30 @@ export const JournalDetail = ({ journalId, onUpdate }) => {
                 </Box>
             )}
 
-            <CRUDJournal
-                my={3}
-                editable={true}
-                defaultValues={{
-                    title: journal.title,
-                    description: journal.description,
-                    status: journal.status,
-                }}
-                journalId={journalId}
-                onSuccess={() => {
-                    fetchJournal();
-                    onUpdate();
-                }}
-            />
-            <Button 
-                isLoading={loading} 
-                bg="complementary.red" 
-                width='100%' 
-                mt='3' 
-                onClick={delJournal} 
-                _hover={{ bg: 'red.600' }}
-            >
-                Xóa
-            </Button>
+            <Flex direction={isMobile ? "column" : "row"} gap={3} width="100%">
+                <CRUDJournal
+                    editable={true}
+                    defaultValues={{
+                        title: journal.title,
+                        description: journal.description,
+                        status: journal.status,
+                    }}
+                    journalId={journalId}
+                    onSuccess={() => {
+                        fetchJournal();
+                        onUpdate();
+                    }}
+                />
+                <Button 
+                    isLoading={loading} 
+                    bg="complementary.red" 
+                    width='100%' 
+                    onClick={delJournal} 
+                    _hover={{ bg: 'red.600' }}
+                >
+                    Xóa
+                </Button>
+            </Flex>
         </Container>
     )
 }
