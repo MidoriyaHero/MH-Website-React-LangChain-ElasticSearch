@@ -6,7 +6,7 @@ const Home = () => {
   const navigate = useNavigate();
 
   return (
-    <Box w="100%" minH="100vh" bg="brand.50" p={{ base: 2, md: 4 }}>
+    <Box bg="brand.50" p={{ base: 2, md: 4 }}>
       {/* Hero Section */}
       <Flex
         direction="column"
@@ -40,7 +40,7 @@ const Home = () => {
         <Stack 
           direction={{ base: "column", md: "row" }} 
           spacing={{ base: 3, md: 6 }}
-          w="100%"
+          
           px={{ base: 4, md: 0 }}
         >
           <Button 
@@ -61,14 +61,6 @@ const Home = () => {
             Viết Nhật Ký
           </Button>
         </Stack>
-        <Text 
-          fontSize={{ base: "sm", md: "lg" }} 
-          color='brand.700' 
-          mt={{ base: 4, md: 6 }}
-          display={{ base: "none", md: "block" }}
-        >
-          (vui lòng sử dụng trình duyệt web để có trải nghiệm tốt nhất)
-        </Text>
       </Flex>
 
       {/* Features Section */}
