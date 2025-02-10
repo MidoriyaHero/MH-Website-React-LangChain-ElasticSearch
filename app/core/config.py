@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     SMTP_SERVER: str = os.getenv('SMTP_SERVER')
     SMTP_PORT: str = os.getenv('SMTP_PORT')
     EMBEDING_MODEL: str = 'models/embedding-001'
-    INDEX_NAME: str = 'mentalhealth-index'
+    INDEX_NAME: str = 'mentalhealth'
     ES_URL: str = "http://localhost:9200"
     MODEL_NAME: str = 'gemini-pro'
     PROJECT_NAME: str = 'Mental RAG System'

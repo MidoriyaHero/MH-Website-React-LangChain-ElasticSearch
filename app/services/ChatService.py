@@ -1,28 +1,20 @@
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.schema.runnable import RunnablePassthrough
-from langchain.schema.output_parser import StrOutputParser
-from langchain.prompts import ChatPromptTemplate
-from langchain_core.runnables.history import RunnableWithMessageHistory
-from langchain_core.prompts import MessagesPlaceholder
-from langchain_openai import ChatOpenAI
-from langchain_core.documents import Document
-
-from typing import List
-import os
 from uuid import UUID
+from langchain_openai import ChatOpenAI
 
 from app.agent.personalized_chat_agent import PersonalizedChatAgent
 from app.models.UserModel  import User
 from app.core.config import settings
-from app.schemas.ResponseSchema import Message
 from app.models.HistoryModel import HistoryMessage, Session
 from app.services.QuestionnaireService import QuestionnaireService
 from app.services.JournalService import JournalService
+from app.services.VectorStoreService import VectorStoreService
 
 
 
 class ChatService:
-    llm = ChatOpenAI(model="gpt-4o-mini",temperature=0, openai_api_key=settings.OPENAI_API_KEY)
+    llm = ChatOpenAI(model="gpt-4o",temperature=0, openai_api_key=settings.OPENAI_API_KEY)
+    vector_store_service = VectorStoreService()
+    
     @staticmethod
     async def listChatSession(user: User) -> list[Session]:
         sessions = await Session.find(Session.owner.id == user.id).to_list()
@@ -84,7 +76,7 @@ class ChatService:
             
         # Initialize agent with user context
         llm = ChatOpenAI(model="gpt-4o", temperature=0)
-        agent = PersonalizedChatAgent(llm,user)
+        agent = PersonalizedChatAgent(llm, user, ChatService.vector_store_service)
         
         # Get user context
         questionnaire_history = await QuestionnaireService.get_user_questionnaire_history(user)

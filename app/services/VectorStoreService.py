@@ -1,48 +1,62 @@
 import os
-from typing import List
+import json
+from typing import List, Optional, Dict
 from fastapi import UploadFile
 from PyPDF2 import PdfReader
+from elasticsearch import Elasticsearch
 
 from langchain_core.documents import Document
 from langchain_openai import OpenAIEmbeddings
 from langchain_elasticsearch import ElasticsearchStore
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_core.documents import Document
 from langchain_community.document_loaders import PyPDFLoader
 
 from app.core.config import settings
 
 
-class Vectordb_service:
-    #set up for using gg embeding model
+class VectorStoreService:
     def __init__(self):
-        if settings.EMBEDING_MODEL == 'models/embedding-001':
-            embeddings = OpenAIEmbeddings(model="text-embedding-3-small",openai_api_key=settings.OPENAI_API_KEY)
-
+        try:
+            # Initialize Elasticsearch client
+            self.es_client = Elasticsearch([settings.ES_URL])
+            
+            # Initialize embeddings
+            self.embeddings = OpenAIEmbeddings(
+                model="text-embedding-3-small",
+                openai_api_key=settings.OPENAI_API_KEY
+            )
+            
+            # Initialize vector store
             self.vector_store = ElasticsearchStore(
                 index_name=settings.INDEX_NAME,
-                embedding=embeddings, 
-                es_url=settings.ES_URL,
+                embedding=self.embeddings,
+                es_connection=self.es_client,
+                
             )
-            self.vector_store
-        else:
-            raise Exception('Invalid embedding model')
-        
-    def as_retriever(self):
-        return self.vector_store.as_retriever(search_type="mmr", 
-                                              search_kwargs={'k': 6, 'lambda_mult': 0.25})
-    
-    def search(self, query: str) -> List:
-        retriever = self.vector_store.as_retriever(
-            search_type="mmr", search_kwargs={'k': 6, 'lambda_mult': 0.25}
+        except Exception:
+            return None
+    def search(self, query: str, k: int = 3) -> List[Dict]:
+        try:
+            retriever = self.vector_store.as_retriever(
+                search_type="similarity_score_threshold", search_kwargs={"score_threshold": 0.6}
+            )
+            results = retriever.invoke(query)
+            relevant_docs = []
+            for i,res in enumerate(results):
+                if i == 3: 
+                    break
+                relevant_docs.append({"content": res.metadata["content"]})
+            return relevant_docs
+        except:
+            return None
+
+    def as_retriever(self, search_type="similarity", **kwargs):
+        """Get a langchain retriever interface"""
+        return self.vector_store.as_retriever(
+            search_type=search_type,
+            **kwargs
         )
-        context = retriever.invoke(query)
-        return context
-    #Old versions for testing
-    def load_doc(self, document: str)-> Document:
-        self.loader = PyPDFLoader(file_path = document, extract_images = True,) #document can be path or file in DB
-        self.document = self.loader.load_and_split()
-        return self.document
+
     def load(self, file: UploadFile, chunk_size: int = 5000, overlap: int = 100):
         documents = []
         if file.filename.endswith('.pdf'):
@@ -64,20 +78,39 @@ class Vectordb_service:
                         page_content=chunk,
                         metadata={
                             "filename": file.filename,
-                            "chunk_start": i,
-                            "chunk_end": i + len(chunk),
+                            "content":chunk
                         }
                     )
                     documents.append(document)
                 
                 # Add all documents in batch
                 self.vector_store.add_documents(documents)
+                return {"status": "success", "message": f"Loaded {len(documents)} pdf documents"}
             except Exception as e:
                 print(f"Error loading file {file.filename}: {e}")
 
-        elif file.filename.endswith('.txt'):
-            # Implement handling for .txt files if needed
-            pass
+        elif file.filename.endswith('.json'):
+            try:
+                json_data = json.load(file.file)
+                documents = []
+                document = Document(
+                    page_content=str(json_data["key"]),
+                    metadata={
+                        "filename": file.filename,
+                        "content":json_data["content"]
+                        }
+                )
+                documents.append(document)
+                if documents:
+                    try:
+                        self.vector_store.add_documents(documents)
+                        return {"status": "success", "message": f"Loaded {len(documents)} json documents"}
+                    except Exception as e:
+                        return {"status": "error", "message": str(e)}
+                return {"status": "error", "message": "No valid documents found in JSON"}
+                
+            except Exception as e:
+                return {"status": "error", "message": f"Error loading JSON: {str(e)}"}
         else:
             print(f"Unsupported file format: {file.filename}")
 

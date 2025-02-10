@@ -16,3 +16,4 @@ pydantic-settings
 pytest 
 pytest-asyncio
 uvicorn[standard]
+qdrant_client

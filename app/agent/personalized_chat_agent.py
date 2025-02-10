@@ -39,35 +39,39 @@ class ContextManager:
     
     def should_recommend_journal(self) -> bool:
         if not self.daily_journals:
-            return True
+            return False
         latest_journal = max(self.daily_journals, key=lambda x: x.create_at)
         return (datetime.now() - latest_journal.create_at).days >= 3
     
     def should_recommend_gad7(self) -> bool:
         latest_gad7 = self.get_latest_gad7_score()
         if not latest_gad7:
-            return True
+            return False
         return (datetime.now() - latest_gad7.timestamp).days >= 7
     
     def should_recommend_phq9(self) -> bool:
         latest_phq9 = self.get_latest_phq9_score()
         if not latest_phq9:
-            return True
+            return False
         return (datetime.now() - latest_phq9.timestamp).days >= 7
 
 class PersonalizedChatAgent:
-    def __init__(self, llm, user):
+    def __init__(self, llm, user, vector_store_service):
         self.llm = llm
         self.user = user
         self.context_manager = ContextManager()
+        self.vector_store_service = vector_store_service
         
         self.chat_prompt = ChatPromptTemplate.from_messages([
             ("system", """
-            Bạn là trợ lý hỗ trợ sức khỏe tâm thần. Bạn chỉ có kiến thức về lĩnh vực tâm lý/tâm thần và các phương pháp hỗ trợ tâm lý, cũng như cách để làm người dùng cảm thấy thoải mái. Khi được hỏi về các lĩnh vực khác, hãy trả lời "Tôi không biết về lĩnh vực đó." Tuy nhiên, nếu có thể làm người dùng thoải mái hoặc cảm thấy tốt hơn, hãy giúp họ.
+            Bạn là trợ lý hỗ trợ sức khỏe tâm thần. Bạn chỉ có kiến thức về lĩnh vực tâm lý/tâm thần và các phương pháp hỗ trợ tâm lý, cũng như cách để làm người dùng cảm thấy thoải mái, giảm các triệu chứng tâm lý.
 
             Mục tiêu của bạn là phản hồi với sự đồng cảm, thấu hiểu, và lời khuyên thực tế, đề xuất các hành động hoặc nguồn lực tích cực. Duy trì giọng điệu thân thiện, chuyên nghiệp và không phán xét. 
 
             Dựa vào nhật ký cảm xúc gần nhất (có thể so sánh ngày trong nhật ký với hôm nay: {today}) {emotional_context}, bạn có thể đưa ra lời khuyên hoặc giải pháp tích cực. Tránh chẩn đoán hoặc kê đơn điều trị, mà hãy hướng dẫn nhẹ nhàng.
+
+            Có thể dựa vào thông tin về y tế này để trả lời:
+            {relevant_docs}
 
             Khi 'điểm đánh giá lo âu/trầm cảm' vượt quá 14 hoặc trong 'cảm xúc'/ 'từ khóa' tóm tắt từ nhật ký có các triệu chứng tiêu cực nặng nề, lập tức đề cập đến vấn đề họ đang đối mặt và đề xuất các đường dây nóng: 115 hoặc 1900 1267, yêu cầu người dùng tìm sự giúp đỡ.
 
@@ -89,7 +93,7 @@ class PersonalizedChatAgent:
         ])
         
         self.chain = LLMChain(llm=llm, prompt=self.chat_prompt)
-    
+
     def _build_emotional_context(self) -> str:
         context = []
         context.append("Theo nghiên cứu từ Hiệp hội Tâm lý Hoa Kỳ (APA), viết nhật ký có thể giúp giảm căng thẳng và cải thiện sức khỏe tâm lý.")
@@ -136,12 +140,28 @@ class PersonalizedChatAgent:
         
         return "\n".join(recommendations) if recommendations else "Không có gợi ý."
 
+    async def _get_relevant_docs(self, query: str) -> str:
+        # Search for relevant documents
+        results = self.vector_store_service.search(query, k=3)
+        
+        # Format the results
+        if not results:
+            return "Không tìm thấy thông tin liên quan."
+        
+        formatted_docs = []
+        for result in results:
+            formatted_docs.append(f"- {result['content']}")
+        print(formatted_docs)
+        return "\n".join(formatted_docs)
     
     async def run(self, query: str) -> str:
         chat_history = "\n".join([f"{msg.role}: {msg.content}" for msg in self.context_manager.chat_history[-5:]])
         
         # Get user's preferred name
         user_name = self.user.full_name if (self.user.first_name and self.user.last_name) else self.user.user_name
+        
+        # Get relevant documents
+        relevant_docs = await self._get_relevant_docs(query)
         
         # Create the input dictionary
         input_dict = {
@@ -150,6 +170,7 @@ class PersonalizedChatAgent:
             "emotional_context": self._build_emotional_context(),
             "recommendations": self._build_recommendations(),
             "chat_history": chat_history,
+            "relevant_docs": relevant_docs,
             "query": query
         }
         response = await self.chain.ainvoke(input_dict)
