@@ -13,13 +13,13 @@ export const HomeNavBar = () => {
     const spacing = useBreakpointValue({ base: 2, md: 4 });
 
     return (
-        <Flex 
-            bg="brand.500" 
-            px={paddingX} 
-            py={3} 
-            justify="space-between" 
-            align="center" 
-            color="white" 
+        <Flex
+            bg="brand.500"
+            px={paddingX}
+            py={3}
+            justify="space-between"
+            align="center"
+            color="white"
             rounded="md"
             w="100%"
         >

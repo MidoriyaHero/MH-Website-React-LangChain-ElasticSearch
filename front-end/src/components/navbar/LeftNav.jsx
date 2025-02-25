@@ -9,13 +9,14 @@ import {
   Button,
   Tooltip,
   Avatar,
-  useColorMode,
+  useColorMode
 } from '@chakra-ui/react';
-import { FiHome, FiMessageCircle, FiBook, FiLogOut, FiClipboard, FiSettings } from 'react-icons/fi';
+import { FiHome, FiMessageCircle, FiBook, FiLogOut, FiClipboard, FiSettings, FiInfo } from 'react-icons/fi';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import axiosInstance from "../../services/axios";
 import { ThemeToggle } from '../Theme/ThemeToggle';
+
 export const LeftNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -30,15 +31,12 @@ export const LeftNav = () => {
     try {
       const response = await axiosInstance.get("/chatbot-services/listSession");
       if (response.data && response.data.length > 0) {
-        // Navigate to the most recent session (assuming sessions are ordered by recency)
         navigate(`/service/chat/${response.data[0].session_id}`);
       } else {
-        // If no sessions exist, go to the default chat route
         navigate('/service/chat');
       }
     } catch (error) {
       console.error("Error fetching sessions:", error);
-      // On error, fallback to default chat route
       navigate('/service/chat');
     }
   };
@@ -49,6 +47,7 @@ export const LeftNav = () => {
     { icon: FiBook, label: 'Nhật ký', path: '/service/journal' },
     { icon: FiClipboard, label: 'Bảng câu hỏi', path: '/service/questionnaire' },
     { icon: FiSettings, label: 'Cài đặt', path: '/service/settings' },
+    { icon: FiInfo, label: 'Hướng dẫn', path: '/service/guide' }
   ];
 
   return (
@@ -61,7 +60,11 @@ export const LeftNav = () => {
       top="0"
       transition="all 0.2s"
     >
-      <ThemeToggle showTooltip={true} marginLeft="auto"/>
+      {/* Logo */}
+
+
+      <ThemeToggle showTooltip={true} marginLeft="auto" />
+
       {/* User Profile Section */}
       <Flex direction="column" align="center" mb={8}>
         <Avatar
