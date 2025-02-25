@@ -13,13 +13,13 @@ export const HomeNavBar = () => {
     const spacing = useBreakpointValue({ base: 2, md: 4 });
 
     return (
-        <Flex 
-            bg="brand.500" 
-            px={paddingX} 
-            py={3} 
-            justify="space-between" 
-            align="center" 
-            color="white" 
+        <Flex
+            bg="brand.500"
+            px={paddingX}
+            py={3}
+            justify="space-between"
+            align="center"
+            color="white"
             rounded="md"
             w="100%"
         >
@@ -32,6 +32,9 @@ export const HomeNavBar = () => {
                 <Button colorScheme="brand" size={buttonSize} onClick={() => navigate('/register')}>
                     Đăng ký
                 </Button>
+                <Button colorScheme="brand" size={buttonSize} variant="ghost" onClick={() => navigate('/service/guide')}>
+                    Hướng dẫn
+                </Button>
             </HStack>
 
             <Outlet />
@@ -39,6 +42,9 @@ export const HomeNavBar = () => {
     );
 };
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> change on server
+=======
+>>>>>>> new tutorial / logo bme
