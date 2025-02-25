@@ -40,7 +40,11 @@ const Home = () => {
         <Stack 
           direction={{ base: "column", md: "row" }} 
           spacing={{ base: 3, md: 6 }}
+<<<<<<< HEAD
           
+=======
+         
+>>>>>>> change on server
           px={{ base: 4, md: 0 }}
         >
           <Button 

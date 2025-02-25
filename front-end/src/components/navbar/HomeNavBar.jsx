@@ -38,3 +38,7 @@ export const HomeNavBar = () => {
         </Flex>
     );
 };
+<<<<<<< HEAD
+=======
+
+>>>>>>> change on server
