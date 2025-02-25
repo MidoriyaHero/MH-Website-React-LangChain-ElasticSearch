@@ -41,10 +41,3 @@ export const HomeNavBar = () => {
         </Flex>
     );
 };
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-
->>>>>>> change on server
-=======
->>>>>>> new tutorial / logo bme
