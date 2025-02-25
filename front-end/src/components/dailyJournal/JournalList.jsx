@@ -1,4 +1,4 @@
-import { Box, Center, Container, Flex, Spinner, Text, useBreakpointValue, IconButton, Drawer, DrawerOverlay, DrawerContent, DrawerCloseButton, DrawerBody } from '@chakra-ui/react'
+import { Box, Center, Container, Flex, Spinner, Text, useBreakpointValue, IconButton, Drawer, DrawerOverlay, DrawerContent, DrawerCloseButton, DrawerBody, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from '@chakra-ui/react'
 import React, { useEffect, useRef, useState } from 'react'
 import axiosInstance from '../../services/axios';
 import { JournalCard } from './JournalCard';
@@ -7,6 +7,7 @@ import { LeftNav } from '../navbar/LeftNav';
 import { JournalDetail } from './JournalDetail';
 import { useColorMode } from '@chakra-ui/react';
 import { HamburgerIcon, ViewIcon } from '@chakra-ui/icons';
+import UserGuide from '../tutorial/Tutorial';
 
 export const JournalList = () => {
     const [journals, setJournals] = useState([]);
@@ -16,25 +17,33 @@ export const JournalList = () => {
     const { colorMode } = useColorMode();
     const [isNavOpen, setIsNavOpen] = useState(false);
     const [isDetailOpen, setIsDetailOpen] = useState(false);
+    const [isGuideOpen, setIsGuideOpen] = useState(false);
     const isMobile = useBreakpointValue({ base: true, lg: false });
     const mainWidth = isMobile ? "100%" : "40%";
 
     useEffect(() => {
         if (isMounted.current) return;
         fetchJournal();
-        isMounted.current = true
+        isMounted.current = true;
+
+        // Check if user just logged in
+        const hasSeenGuide = localStorage.getItem("hasSeenGuide");
+        if (!hasSeenGuide) {
+            setIsGuideOpen(true);
+            localStorage.setItem("hasSeenGuide", "true");
+        }
     }, [])
 
     const fetchJournal = () => {
-        setLoading(true)
+        setLoading(true);
         axiosInstance.get('/journal/')
-        .then((response) =>{
-            setJournals(response.data)
-        }).catch ((error) => {
-            console.log(error)
-        }).finally(() => {
-            setLoading(false)
-        })
+            .then((response) => {
+                setJournals(response.data);
+            }).catch((error) => {
+                console.log(error);
+            }).finally(() => {
+                setLoading(false);
+            });
     }
 
     const handleJournalSelect = (journalId) => {
@@ -43,6 +52,20 @@ export const JournalList = () => {
 
     return (
         <Flex h="100vh">
+            {/* Popup Guide */}
+            <Modal isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} isCentered>
+                <ModalOverlay />
+                <ModalContent>
+                    <ModalHeader>Hướng Dẫn Sử Dụng</ModalHeader>
+                    <ModalBody>
+                        <UserGuide isInModal={true} />
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button colorScheme="blue" onClick={() => setIsGuideOpen(false)}>Đóng</Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
+
             {/* Mobile Navigation Button */}
             {isMobile && (
                 <>
@@ -85,13 +108,13 @@ export const JournalList = () => {
                     <LeftNav />
                 </Box>
             )}
-            
+
             {/* Journal List Section */}
-            <Container 
-                mt={isMobile ? 16 : 9} 
-                w={mainWidth} 
-                bg={colorMode === 'light' ? 'white' : 'gray.800'} 
-                justify="center" 
+            <Container
+                mt={isMobile ? 16 : 9}
+                w={mainWidth}
+                bg={colorMode === 'light' ? 'white' : 'gray.800'}
+                justify="center"
                 align="center"
                 px={isMobile ? 4 : 6}
             >
@@ -103,8 +126,8 @@ export const JournalList = () => {
                 ) : (
                     <Box mt={6}>
                         {journals?.map((journal) => (
-                            <JournalCard 
-                                journal={journal} 
+                            <JournalCard
+                                journal={journal}
                                 key={journal.journal_id}
                                 isSelected={selectedJournalId === journal.journal_id}
                                 onSelect={(id) => {
@@ -130,8 +153,8 @@ export const JournalList = () => {
                         <DrawerCloseButton />
                         <DrawerBody p={4} mt={8}>
                             {selectedJournalId ? (
-                                <JournalDetail 
-                                    journalId={selectedJournalId} 
+                                <JournalDetail
+                                    journalId={selectedJournalId}
                                     onUpdate={() => {
                                         fetchJournal();
                                         setIsDetailOpen(false);
@@ -151,7 +174,7 @@ export const JournalList = () => {
                         <JournalDetail journalId={selectedJournalId} onUpdate={fetchJournal} />
                     ) : (
                         <Center h="100%" bg="brand.50" rounded="lg">
-                            <Text color="gray.500">Select a journal to view details</Text>
+                            <Text color="gray.500">Nhấn vào nhật ký để xem chi tiết</Text>
                         </Center>
                     )}
                 </Box>

@@ -26,21 +26,24 @@ function App() {
                   <Spinner thickness="4px" speed="0.5s" emptyColor="brand.200" color="brand.500" />
                 </Flex>
               ) : (
-                <Routes>
-                  <Route path="/" element={<PublicRoute><HomeNavBar /><Home /></PublicRoute>} />
-                  <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
-                  <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
-                  <Route path="/service">
-                    <Route path="/service/home" element={<Authenticated><MainNavBar /><Home /></Authenticated>} />
-                    <Route path="/service/chat" element={<Authenticated><ChatDetail /></Authenticated>} />
-                    <Route path="/service/chat/:sessionId" element={<Authenticated><ChatDetail /></Authenticated>} />
-                    <Route path="/service/journal" element={<Authenticated><JournalList /></Authenticated>} />
-                    <Route path="/service/questionnaire" element={<Authenticated><Questionnaire /></Authenticated>} />
-                    <Route path="/service/settings" element={<Authenticated><Settings /></Authenticated>} />
-                    <Route path="/service/guide" element={<UserGuide />} />
-                  </Route>
-                  <Route path="*" element={<Navigate to="/" />} />
-                </Routes>
+                <>
+
+                  <Routes>
+                    <Route path="/" element={<PublicRoute><HomeNavBar /><Home /></PublicRoute>} />
+                    <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+                    <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+                    <Route path="/service">
+                      <Route path="/service/home" element={<Authenticated><MainNavBar /><Home /></Authenticated>} />
+                      <Route path="/service/chat" element={<Authenticated><ChatDetail /></Authenticated>} />
+                      <Route path="/service/chat/:sessionId" element={<Authenticated><ChatDetail /></Authenticated>} />
+                      <Route path="/service/journal" element={<Authenticated><JournalList /></Authenticated>} />
+                      <Route path="/service/questionnaire" element={<Authenticated><Questionnaire /></Authenticated>} />
+                      <Route path="/service/settings" element={<Authenticated><Settings /></Authenticated>} />
+                      <Route path="/service/guide" element={<Authenticated><UserGuide /></Authenticated>} />
+                    </Route>
+                    <Route path="*" element={<Navigate to="/" />} />
+                  </Routes>
+                </>
               )
             }
           </AuthConsumer>

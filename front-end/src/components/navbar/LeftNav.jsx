@@ -9,7 +9,7 @@ import {
   Button,
   Tooltip,
   Avatar,
-  useColorMode,
+  useColorMode
 } from '@chakra-ui/react';
 import { FiHome, FiMessageCircle, FiBook, FiLogOut, FiClipboard, FiSettings, FiInfo } from 'react-icons/fi';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -60,7 +60,11 @@ export const LeftNav = () => {
       top="0"
       transition="all 0.2s"
     >
+      {/* Logo */}
+
+
       <ThemeToggle showTooltip={true} marginLeft="auto" />
+
       {/* User Profile Section */}
       <Flex direction="column" align="center" mb={8}>
         <Avatar

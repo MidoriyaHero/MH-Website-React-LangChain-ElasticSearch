@@ -32,9 +32,6 @@ export const HomeNavBar = () => {
                 <Button colorScheme="brand" size={buttonSize} onClick={() => navigate('/register')}>
                     Đăng ký
                 </Button>
-                <Button colorScheme="brand" size={buttonSize} variant="ghost" onClick={() => navigate('/service/guide')}>
-                    Hướng dẫn
-                </Button>
             </HStack>
 
             <Outlet />

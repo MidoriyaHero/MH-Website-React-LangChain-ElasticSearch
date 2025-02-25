@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     Box,
     Heading,
@@ -7,20 +7,25 @@ import {
     ListItem,
     ListIcon,
     VStack,
-    Button,
-    Image
+    Image,
+    IconButton,
+    Drawer,
+    DrawerOverlay,
+    DrawerContent,
+    DrawerCloseButton,
+    DrawerBody,
+    useBreakpointValue
 } from '@chakra-ui/react';
-import { CheckCircleIcon, ArrowBackIcon } from '@chakra-ui/icons';
-import { useNavigate } from 'react-router-dom';
+import { CheckCircleIcon, HamburgerIcon } from '@chakra-ui/icons';
+import { LeftNav } from '../navbar/LeftNav';
 
-const UserGuide = () => {
-    const navigate = useNavigate();
+const UserGuide = ({ isInModal = false }) => {
+    const isMobile = useBreakpointValue({ base: true, lg: false });
+    const [isNavOpen, setIsNavOpen] = useState(false);
 
-    return (
-        <Box p={6} maxW="600px" mx="auto" bg="gray.50" borderRadius="lg" boxShadow="md">
-            <Button leftIcon={<ArrowBackIcon />} mb={4} variant="ghost" onClick={() => navigate(-1)}>
-                Trở về
-            </Button>
+    // Content section that's the same regardless of where it's displayed
+    const GuideContent = () => (
+        <Box p={6} maxW={isInModal ? "100%" : "600px"} mx="auto" bg="gray.50" borderRadius="lg" boxShadow="md" flex="1">
             <Heading as="h2" size="lg" mb={4} textAlign="center" color="brand.600">
                 Hướng Dẫn Sử Dụng
             </Heading>
@@ -47,7 +52,7 @@ const UserGuide = () => {
                 <a href="https://bme.hcmiu.edu.vn/" target="_blank" rel="noopener noreferrer">
                     <Image
                         src="https://bme.hcmiu.edu.vn/wp-content/uploads/2024/07/bmelogo2-2.png"
-                        alt="Lumos Logo"
+                        alt="Logo"
                         boxSize="auto"
                         mx="auto"
                         cursor="pointer"
@@ -57,6 +62,46 @@ const UserGuide = () => {
                     Truy cập website của BME
                 </Text>
             </Box>
+        </Box>
+    );
+
+    // If in modal, just show the guide content without navigation
+    if (isInModal) {
+        return <GuideContent />;
+    }
+
+    // Otherwise show the full page with navigation
+    return (
+        <Box display="flex" flexDirection={isMobile ? "column" : "row"}>
+            {isMobile && (
+                <IconButton
+                    icon={<HamburgerIcon />}
+                    position="fixed"
+                    top={4}
+                    left={4}
+                    zIndex={20}
+                    onClick={() => setIsNavOpen(true)}
+                    aria-label="Open navigation"
+                />
+            )}
+
+            {isMobile ? (
+                <Drawer isOpen={isNavOpen} placement="left" onClose={() => setIsNavOpen(false)}>
+                    <DrawerOverlay />
+                    <DrawerContent>
+                        <DrawerCloseButton />
+                        <DrawerBody p={0}>
+                            <LeftNav isDrawer={true} />
+                        </DrawerBody>
+                    </DrawerContent>
+                </Drawer>
+            ) : (
+                <Box w="15%">
+                    <LeftNav />
+                </Box>
+            )}
+
+            <GuideContent />
         </Box>
     );
 };
